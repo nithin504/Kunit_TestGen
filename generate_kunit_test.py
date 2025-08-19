@@ -25,7 +25,7 @@ genai.configure(api_key=GOOGLE_API_KEY)
 # Setup file paths
 # ----------------------
 functions_dir = Path("functions_extract")
-sample_file = Path("test_kunit.c")
+sample_file = Path("kunit_test.c")
 output_dir = Path("generated_tests")
 output_dir.mkdir(parents=True, exist_ok=True)
 
