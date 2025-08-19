@@ -1,0 +1,4 @@
+venv/
+.env
+functions_extract/
+generated_tests/

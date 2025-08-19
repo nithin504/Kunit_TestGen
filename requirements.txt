@@ -1,0 +1,8 @@
+langchain
+ipykernel
+python-dotenv
+huggingface_hub
+transformers
+langchain_huggingface
+openai
+google.generativeai
