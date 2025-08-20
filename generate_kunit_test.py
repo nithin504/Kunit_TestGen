@@ -86,7 +86,7 @@ for func_file in functions_dir.glob("*.c"):
 
     # Construct the detailed prompt for the model
     prompt = f"""
-You are an expert C programmer specializing in writing robust KUnit tests for the Linux kernel. Your task is to generate a complete, self-contained, and compilable C test file that avoids common compilation errors like `-Werror=unused-function`.
+You are an expert C programmer specializing in writing robust KUnit tests for the Linux kernel. Your task is to generate a complete, self-contained, and compilable C test file that avoids common compilation errors.
 
 **Function to Test:**
 * **Name**: {{func_name}}
@@ -104,29 +104,25 @@ Your primary goal is to generate a test that correctly isolates the function und
 3.  **Mock Dependencies via Preprocessor (`#define`):**
     * Analyze the function to be tested and identify all external functions it calls.
     * For each dependency, create a `static` mock implementation (e.g., `my_mock_function`).
-    * **Crucially**, use the preprocessor to redirect the original function call to your mock **before** including the source file. For example:
-        ```c
-        #define function_to_mock(...) mock_function_implementation(__VA_ARGS__)
-        ```
+    * Use the preprocessor to redirect the original function call to your mock **before** including the source file.
 4.  **Exception for Inline Data Accessors:**
-    * Many kernel functions (like `pinctrl_dev_get_drvdata`) are simple `static inline` functions or macros that just access a struct member.
-    * For these specific functions, **DO NOT** create a mock function or use `#define`. This is the most common cause of `-Wunused-function` errors.
-    * Instead, directly manipulate the data structures in your test's "Arrange" step to control the behavior. For `pinctrl_dev_get_drvdata`, you will set the `driver_data` field on your test `pinctrl_dev` struct.
+    * For kernel functions that are simple data accessors (like `pinctrl_dev_get_drvdata`), **DO NOT** create a mock function. This avoids `-Wunused-function` errors.
+    * Instead, directly manipulate the data structures in your test's setup to control the behavior (e.g., set the `driver_data` field on your test struct).
 5.  **Include the Source `.c` File:**
-    * **After** all your `#define` redirects and mock implementations are in place, include the target C file directly. This ensures the C file is compiled using your mocks.
+    * After all mocks are defined, you **must** include the source file being tested.
+    * Use the exact filename provided in the `{{func_file}}` variable for the `#include` directive. The line must be:
         ```c
-        #include "path/to/the/file_to_test.c"
+        #include "{{func_file}}"
         ```
 6.  **Write Test Cases (Arrange, Act, Assert):**
-    * **Arrange:** Set up all test data. Use `kunit_kzalloc` to create instances of structs. Configure their fields to control the test's logic. If you are testing a data accessor, this is where you set the relevant struct members.
+    * **Arrange:** Set up all test data using `kunit_kzalloc`. Configure struct fields to control the test's logic.
     * **Act:** Call the function under test.
     * **Assert:** Use KUnit macros like `KUNIT_EXPECT_EQ` to verify the outcome.
-7.  **Create Test Suite:** Define the `kunit_case` array and the `kunit_suite` to register your test.
+7.  **Create Test Suite:** Define the `kunit_case` array and `kunit_suite` to register your test.
 
 **Output Requirement:**
 Generate **only the raw C code** for the test file. Do not include any introductory text, explanations, or markdown formatting like ````c` or ````.
 """
-
 
     print(f"🔹 Generating test for {func_file.name}...")
     response_text = query_model(prompt)
