@@ -86,36 +86,45 @@ for func_file in functions_dir.glob("*.c"):
 
     # Construct the detailed prompt for the model
     prompt = f"""
-You are an expert C programmer writing a KUnit test for a Linux kernel function. Your task is to generate a complete, self-contained, and compilable C test file.
+You are an expert C programmer specializing in writing robust KUnit tests for the Linux kernel. Your task is to generate a complete, self-contained, and compilable C test file that avoids common compilation errors like `-Werror=unused-function`.
 
 **Function to Test:**
-{func_code}
-
+* **Name**: {{func_name}}
+* **File**: {{func_file}}
+* **Code**:
+    ```c
+    {{func_code}}
+    ```
 
 **Instructions:**
-To properly unit test the function, you must isolate it from its dependencies. Follow this exact pattern:
-1.  **Include Headers:** Start with `#include <kunit/test.h>` and any other necessary headers.
-2.  **Define Mock Structs:** Define any necessary structs, like `struct amd_gpio`, that are needed for the test.
-3.  **Mock Dependencies:** The function under test calls `pinctrl_dev_get_drvdata`. You MUST provide a mock implementation of this function within the test file. This mock should return a pointer to a test-controlled struct.
-    
-    // Example mock
-    static void *pinctrl_dev_get_drvdata(struct pinctrl_dev *pctldev) {{
-        return pctldev->dev.driver_data;
-    }}
-    
-4.  **Copy the Function Under Test:** Copy the exact function to be tested (`{func_file.stem}`) into the test file and declare it as `static`. This ensures the test calls the local version, which will then use your mock dependency.
-5.  **Write the Test Case:** Create a static void KUnit test case function (e.g., `static void test_my_function(struct kunit *test)`).
-6.  **Setup Test Data:** Inside the test case, create an instance of the required structs (e.g., `struct amd_gpio`, `struct pinctrl_dev`). Use `kunit_kzalloc` for memory allocation. Set the `driver_data` of your test `pinctrl_dev` to point to your mock `amd_gpio` struct.
-7.  **Call and Assert:** Call the function under test with your prepared test data and use `KUNIT_EXPECT_EQ` to verify that the return value is correct.
-8.  **Create Test Suite:** Define the `kunit_case` array and the `kunit_test_suite` to register the test.
+Your primary goal is to generate a test that correctly isolates the function under test. Follow this precise pattern:
 
-**Reference KUnit Structure:**
-
-{sample_code}
-
+1.  **Include Headers:** Start with `#include <kunit/test.h>` and any other headers required for data types.
+2.  **Define Mock Structs:** Define minimal versions of any structs needed for the function's parameters or logic. Only include the fields that are actually used.
+3.  **Mock Dependencies via Preprocessor (`#define`):**
+    * Analyze the function to be tested and identify all external functions it calls.
+    * For each dependency, create a `static` mock implementation (e.g., `my_mock_function`).
+    * **Crucially**, use the preprocessor to redirect the original function call to your mock **before** including the source file. For example:
+        ```c
+        #define function_to_mock(...) mock_function_implementation(__VA_ARGS__)
+        ```
+4.  **Exception for Inline Data Accessors:**
+    * Many kernel functions (like `pinctrl_dev_get_drvdata`) are simple `static inline` functions or macros that just access a struct member.
+    * For these specific functions, **DO NOT** create a mock function or use `#define`. This is the most common cause of `-Wunused-function` errors.
+    * Instead, directly manipulate the data structures in your test's "Arrange" step to control the behavior. For `pinctrl_dev_get_drvdata`, you will set the `driver_data` field on your test `pinctrl_dev` struct.
+5.  **Include the Source `.c` File:**
+    * **After** all your `#define` redirects and mock implementations are in place, include the target C file directly. This ensures the C file is compiled using your mocks.
+        ```c
+        #include "path/to/the/file_to_test.c"
+        ```
+6.  **Write Test Cases (Arrange, Act, Assert):**
+    * **Arrange:** Set up all test data. Use `kunit_kzalloc` to create instances of structs. Configure their fields to control the test's logic. If you are testing a data accessor, this is where you set the relevant struct members.
+    * **Act:** Call the function under test.
+    * **Assert:** Use KUnit macros like `KUNIT_EXPECT_EQ` to verify the outcome.
+7.  **Create Test Suite:** Define the `kunit_case` array and the `kunit_suite` to register your test.
 
 **Output Requirement:**
-Generate **only the complete C code** for the test file. Do not include any explanations or markdown.
+Generate **only the raw C code** for the test file. Do not include any introductory text, explanations, or markdown formatting like ````c` or ````.
 """
 
 
