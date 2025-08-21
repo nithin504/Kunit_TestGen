@@ -1,0 +1,44 @@
+ERROR:root:../drivers/pinctrl/amd_get_functions_count_kunit_test.c: In function ‘test_gpiochip_add_remove_success’:
+../drivers/pinctrl/amd_get_functions_count_kunit_test.c:32:34: error: too few arguments to function ‘kunit_kzalloc’
+   32 |         struct test_data *data = kunit_kzalloc(test, sizeof(*data));
+      |                                  ^~~~~~~~~~~~~
+In file included from ../drivers/pinctrl/amd_get_functions_count_kunit_test.c:2:
+../include/kunit/test.h:467:21: note: declared here
+  467 | static inline void *kunit_kzalloc(struct kunit *test, size_t size, gfp_t gfp)
+      |                     ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_get_functions_count_kunit_test.c: At top level:
+../drivers/pinctrl/amd_get_functions_count_kunit_test.c:67:10: error: ‘struct kunit_suite’ has no member named ‘cases’
+   67 |         .cases = cases,
+      |          ^~~~~
+../drivers/pinctrl/amd_get_functions_count_kunit_test.c:67:18: error: initialization of ‘int (*)(struct kunit_suite *)’ from incompatible pointer type ‘struct kunit_case *’ [-Werror=incompatible-pointer-types]
+   67 |         .cases = cases,
+      |                  ^~~~~
+../drivers/pinctrl/amd_get_functions_count_kunit_test.c:67:18: note: (near initialization for ‘suite.suite_init’)
+../include/kunit/test.h:381:51: error: lvalue required as unary ‘&’ operand
+  381 | #define kunit_test_suite(suite) kunit_test_suites(&suite)
+      |                                                   ^
+../include/kunit/test.h:361:52: note: in definition of macro ‘__kunit_test_suites’
+  361 |         __used __section(".kunit_test_suites") = { __VA_ARGS__ }
+      |                                                    ^~~~~~~~~~~
+../include/kunit/test.h:381:33: note: in expansion of macro ‘kunit_test_suites’
+  381 | #define kunit_test_suite(suite) kunit_test_suites(&suite)
+      |                                 ^~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_get_functions_count_kunit_test.c:70:1: note: in expansion of macro ‘kunit_test_suite’
+   70 | kunit_test_suite(&suite);
+      | ^~~~~~~~~~~~~~~~
+cc1: some warnings being treated as errors
+make[5]: *** [../scripts/Makefile.build:287: drivers/pinctrl/amd_get_functions_count_kunit_test.o] Error 1
+make[4]: *** [../scripts/Makefile.build:554: drivers/pinctrl] Error 2
+make[4]: *** Waiting for unfinished jobs....
+make[3]: *** [../scripts/Makefile.build:554: drivers] Error 2
+make[3]: *** Waiting for unfinished jobs....
+make[2]: *** [/home/amd/linux/Makefile:2003: .] Error 2
+make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Error 2
+make: *** [Makefile:248: __sub-make] Error 2
+
+[17:02:55] Configuring KUnit Kernel ...
+[17:02:55] Building KUnit Kernel ...
+Populating config with:
+$ make ARCH=x86_64 O=.kunit olddefconfig
+Building with:
+$ make all compile_commands.json scripts_gdb ARCH=x86_64 O=.kunit --jobs=4
