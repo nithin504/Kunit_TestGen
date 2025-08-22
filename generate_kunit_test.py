@@ -85,43 +85,37 @@ for func_file in functions_dir.glob("*.c"):
     func_code = func_file.read_text(encoding="utf-8")
 
     # Construct the detailed prompt for the model
+    
     prompt = f"""
-You are an expert C programmer specializing in writing robust KUnit tests for the Linux kernel. Your task is to generate a complete, self-contained, and compilable C test file that avoids common compilation errors.
+You are an expert C programmer tasked with writing a complete and error-free KUnit test for a static Linux kernel function.
+
+**Your Task:**
+Write a complete, self-contained, and compilable KUnit test file for the C function provided below.
 
 **Function to Test:**
-* **Name**: {{func_name}}
-* **File**: {{func_file}}
-* **Code**:
-    ```c
-    {{func_code}}
-    ```
+```c
+// PASTE THE ENTIRE C FUNCTION YOU WANT TO TEST HERE
+static int amd_get_groups_count(struct pinctrl_dev *pctldev)
+{{
+	struct amd_gpio *gpio_dev = pinctrl_dev_get_drvdata(pctldev);
 
-**Instructions:**
-Your primary goal is to generate a test that correctly isolates the function under test. Follow this precise pattern:
+	return gpio_dev->ngroups;
+}}
+````
 
-1.  **Include Headers:** Start with `#include <kunit/test.h>` and any other headers required for data types.
-2.  **Define Mock Structs:** Define minimal versions of any structs needed for the function's parameters or logic. Only include the fields that are actually used.
-3.  **Mock Dependencies via Preprocessor (`#define`):**
-    * Analyze the function to be tested and identify all external functions it calls.
-    * For each dependency, create a `static` mock implementation (e.g., `my_mock_function`).
-    * Use the preprocessor to redirect the original function call to your mock **before** including the source file.
-4.  **Exception for Inline Data Accessors:**
-    * For kernel functions that are simple data accessors (like `pinctrl_dev_get_drvdata`), **DO NOT** create a mock function. This avoids `-Wunused-function` errors.
-    * Instead, directly manipulate the data structures in your test's setup to control the behavior (e.g., set the `driver_data` field on your test struct).
-5.  **Include the Source `.c` File:**
-    * After all mocks are defined, you **must** include the source file being tested.
-    * Use the exact filename provided in the `{{func_file}}` variable for the `#include` directive. The line must be:
-        ```c
-        #include "{{func_file}}"
-        ```
-6.  **Write Test Cases (Arrange, Act, Assert):**
-    * **Arrange:** Set up all test data using `kunit_kzalloc`. Configure struct fields to control the test's logic.
-    * **Act:** Call the function under test.
-    * **Assert:** Use KUnit macros like `KUNIT_EXPECT_EQ` to verify the outcome.
-7.  **Create Test Suite:** Define the `kunit_case` array and `kunit_suite` to register your test.
+**Strict Requirements for the Generated Code:**
+
+1.  **Identify the Function Name:** Automatically identify the name of the function from the code pasted above (e.g., `amd_get_groups_count`).
+2.  **No Unused Code:** Do **not** generate any helper functions, mock functions, or variables that are not actually called or used. The final code must compile without any `-Wunused-function` or `-Wunused-variable` warnings.
+3.  **Correct Data Structures:** Define minimal mock versions of any necessary structs (like `struct amd_gpio`). Only include fields that are actually accessed by the function under test.
+4.  **Handle Data Accessors Correctly:** If the function uses a simple data accessor macro or inline function (like `pinctrl_dev_get_drvdata`), **do not** create a mock for it. Instead, set the data it accesses directly in your test setup (e.g., `pctldev->driver_data = ...`).
+5.  **Include the Function:** The function being tested must be included in the test file so it can be called. You can do this by copying the function's code directly into the test file and marking it `static`.
+6.  **Complete Test Suite:** The final output must be a single, complete file containing the test case and the KUnit suite definition (`kunit_case`, `kunit_suite`, `kunit_test_suite`).
+7.  **No Placeholders:** Do not use any placeholders like `{{func_name}}` in the final output. The code must be ready to compile immediately.
 
 **Output Requirement:**
-Generate **only the raw C code** for the test file. Do not include any introductory text, explanations, or markdown formatting like ````c` or ````.
+Generate only the raw C code. Do not include any explanations or markdown formatting like ` ```c `.
+
 """
 
     print(f"🔹 Generating test for {func_file.name}...")
