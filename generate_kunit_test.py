@@ -91,45 +91,47 @@ for func_file in functions_dir.glob("*.c"):
 
     # Construct the detailed prompt for the model
     prompt = f"""
-You are an expert Linux kernel developer skilled in writing KUnit tests.
+You are an expert Linux kernel developer with a specialization in writing high-quality, compilable KUnit tests.
 
-## Functions to Test
-Each `.c` file in the `functions_extract/` folder contains one or more functions.
-Here is the combined source content you must cover:
-```c
-{func_code}
+## Goal
+Your task is to write a single, complete, and compilable KUnit test file named `generated_kunit_test.c`. This file must provide test coverage for all C functions provided in the input.
 
-Reference KUnit Test (for style/format)
-{sample_code}
+## Inputs
 
-Previous Errors to Avoid
-{error_logs}
+1.  **Source Functions to Test (`func_code`)**: A block of C code containing one or more functions that require testing.
+    ```c
+    {func_code}
+    ```
 
-Requirements:
+2.  **Reference KUnit Test (`sample_code`)**: An example KUnit test file to be used for style, structure, and formatting.
+    ```c
+    {sample_code}
+    ```
 
-Automatically detect all function names from the provided code and generate dedicated test cases for each one.
+3.  **Previous Errors to Fix (`error_logs`)**: A log of compilation errors from previous attempts. Your generated code must not repeat these errors.
+    ```
+    {error_logs}
+    ```
 
-Follow the exact structure, macros, and conventions from kunit_test.c.
+## Strict Instructions
 
-Fix issues similar to those listed in the provided error log.
+1.  **Analyze and Plan**:
+    * First, thoroughly analyze all provided inputs. Your primary goal is to generate code that does not repeat any of the errors found in `{error_logs}`.
+    * Identify every function within the `{func_code}` block. For each function you find, you must plan a dedicated test case. Name the test case `test_<original_function_name>`.
 
-Define only minimal mocks/structs needed. Do not add unused variables or functions.
+2.  **Implement Test Cases**:
+    * Write the C code for each planned test case.
+    * Strictly adhere to the coding style, macro usage, and overall structure of the `{sample_code}` reference file.
+    * Copy every function from `{func_code}` into the test file and declare it as `static`. This is required to make them directly callable by the tests.
+    * Define only the minimal mock structs and helper functions necessary for the tests. Do not generate any code that results in `-Wunused-function` or `-Wunused-variable` warnings.
 
-Copy every function under test into the file as static so they can be tested directly.
+3.  **Consolidate into a Single File**:
+    * Combine all generated `KUNIT_CASE` definitions into a single `kunit_case` array.
+    * Define a single `kunit_suite` that uses this array.
+    * Register the suite using `kunit_test_suite()`.
 
-Generate a single compilable KUnit test file named generated_kunit_test.c containing:
-
-All provided functions
-
-Test cases for each function
-
-A single kunit_case[] array, kunit_suite, and kunit_test_suite
-
-Output must be only valid C code (no explanations, no markdown, no placeholders).
-
-Output:
-
-Return the full content of a single C file generated_kunit_test.c that contains KUnit tests for all functions.
+## Output Format
+Produce **only the raw C code** for the `generated_kunit_test.c` file. Do not include any explanations, markdown like ` ```c `, placeholders, or any text other than the valid C code itself.
 """
 
     print(f"🔹 Generating test for {func_file.name}...")
