@@ -22,11 +22,12 @@ if not GOOGLE_API_KEY:
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # ----------------------
-# Setup file paths
+# Setup file paths  
 # ----------------------
 functions_dir = Path("functions_extract")
 sample_file = Path("kunit_test.c")
 output_dir = Path("generated_tests")
+error_log_file = Path("kunit_test.txt")
 output_dir.mkdir(parents=True, exist_ok=True)
 
 # ----------------------
@@ -73,8 +74,12 @@ def query_model(prompt: str) -> str:
 # The sample file provides a reference for the desired output format.
 print("Reading sample KUnit test file...")
 sample_code = sample_file.read_text(encoding="utf-8") if sample_file.exists() else "// No sample reference available"
+error_logs = error_log_file.read_text(encoding="utf-8") if error_log_file.exists() else "// No error logs available"
+
 if "No sample" in sample_code:
-    print(f"Warning: Sample file '{sample_file}' not found.")
+    print(f"⚠️  Warning: Sample file '{sample_file}' not found.")
+if "No error logs" in error_logs:
+    print(f"⚠️  Warning: Error log file '{error_log_file}' not found.")
 
 
 # ----------------------
@@ -85,37 +90,46 @@ for func_file in functions_dir.glob("*.c"):
     func_code = func_file.read_text(encoding="utf-8")
 
     # Construct the detailed prompt for the model
-    
     prompt = f"""
-You are an expert C programmer tasked with writing a complete and error-free KUnit test for a static Linux kernel function.
+You are an expert Linux kernel developer skilled in writing KUnit tests.
 
-**Your Task:**
-Write a complete, self-contained, and compilable KUnit test file for the C function provided below.
-
-**Function to Test:**
+## Functions to Test
+Each `.c` file in the `functions_extract/` folder contains one or more functions.
+Here is the combined source content you must cover:
 ```c
-// PASTE THE ENTIRE C FUNCTION YOU WANT TO TEST HERE
-static int amd_get_groups_count(struct pinctrl_dev *pctldev)
-{{
-	struct amd_gpio *gpio_dev = pinctrl_dev_get_drvdata(pctldev);
+{func_code}
 
-	return gpio_dev->ngroups;
-}}
-````
+Reference KUnit Test (for style/format)
+{sample_code}
 
-**Strict Requirements for the Generated Code:**
+Previous Errors to Avoid
+{error_logs}
 
-1.  **Identify the Function Name:** Automatically identify the name of the function from the code pasted above (e.g., `amd_get_groups_count`).
-2.  **No Unused Code:** Do **not** generate any helper functions, mock functions, or variables that are not actually called or used. The final code must compile without any `-Wunused-function` or `-Wunused-variable` warnings.
-3.  **Correct Data Structures:** Define minimal mock versions of any necessary structs (like `struct amd_gpio`). Only include fields that are actually accessed by the function under test.
-4.  **Handle Data Accessors Correctly:** If the function uses a simple data accessor macro or inline function (like `pinctrl_dev_get_drvdata`), **do not** create a mock for it. Instead, set the data it accesses directly in your test setup (e.g., `pctldev->driver_data = ...`).
-5.  **Include the Function:** The function being tested must be included in the test file so it can be called. You can do this by copying the function's code directly into the test file and marking it `static`.
-6.  **Complete Test Suite:** The final output must be a single, complete file containing the test case and the KUnit suite definition (`kunit_case`, `kunit_suite`, `kunit_test_suite`).
-7.  **No Placeholders:** Do not use any placeholders like `{{func_name}}` in the final output. The code must be ready to compile immediately.
+Requirements:
 
-**Output Requirement:**
-Generate only the raw C code. Do not include any explanations or markdown formatting like ` ```c `.
+Automatically detect all function names from the provided code and generate dedicated test cases for each one.
 
+Follow the exact structure, macros, and conventions from kunit_test.c.
+
+Fix issues similar to those listed in the provided error log.
+
+Define only minimal mocks/structs needed. Do not add unused variables or functions.
+
+Copy every function under test into the file as static so they can be tested directly.
+
+Generate a single compilable KUnit test file named generated_kunit_test.c containing:
+
+All provided functions
+
+Test cases for each function
+
+A single kunit_case[] array, kunit_suite, and kunit_test_suite
+
+Output must be only valid C code (no explanations, no markdown, no placeholders).
+
+Output:
+
+Return the full content of a single C file generated_kunit_test.c that contains KUnit tests for all functions.
 """
 
     print(f"🔹 Generating test for {func_file.name}...")
