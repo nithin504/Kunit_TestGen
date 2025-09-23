@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "chrono": "c",
+        "system_error": "c",
+        "typeindex": "c",
+        "xlocale": "c"
+    }
+}

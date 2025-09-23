@@ -25,11 +25,13 @@ genai.configure(api_key=GOOGLE_API_KEY)
 # Setup file paths  
 # ----------------------
 functions_dir = Path("functions_extract")
-sample_file = Path("kunit_test.c")
+sample_file1 = Path("kunit_test.c")
+sample_file2 = Path("kunit_test2.c")
+sample_file3 = Path("kunit_test3.c")
 output_dir = Path("generated_tests")
 error_log_file = Path("kunit_test.txt")
 output_dir.mkdir(parents=True, exist_ok=True)
-
+'''
 # ----------------------
 # Setup Gemini Pro Model
 # ----------------------
@@ -66,18 +68,69 @@ def query_model(prompt: str) -> str:
         # Handle potential API errors gracefully
         print(f"An error occurred while querying the model: {e}")
         return f"// Error generating test: {e}"
+'''# ----------------------
+# Setup OpenAI Client for OpenRouter
+from openai import OpenAI
+
+# ----------------------
+# Setup OpenRouter Client
+# ----------------------
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key="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",
+)
+
+# ----------------------
+# Configuration
+# ----------------------
+MODEL_NAME ="deepseek/deepseek-chat-v3.1:free"  # You can change to other Gemini variants
+TEMPERATURE = 0.2
 
 
+# ----------------------
+# Helper to query the OpenRouter model
+# ----------------------
+def query_model(prompt: str) -> str:
+    """
+    Sends a prompt to the configured OpenRouter model and returns the text response.
+
+    Args:
+        prompt: The input prompt string for the model.
+
+    Returns:
+        The generated text from the model as a string.
+    """
+    try:
+        completion = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            temperature=TEMPERATURE,
+            max_tokens=4096,  # Increased token limit to prevent incomplete code generation
+            
+        )
+        return completion.choices[0].message.content
+    except Exception as e:
+        print(f"An error occurred while querying the model: {e}")
+        return f"// Error generating response: {e}"
 # ----------------------
 # Read sample KUnit test for context
 # ----------------------
 # The sample file provides a reference for the desired output format.
 print("Reading sample KUnit test file...")
-sample_code = sample_file.read_text(encoding="utf-8") if sample_file.exists() else "// No sample reference available"
+sample_code1 = sample_file1.read_text(encoding="utf-8") if sample_file1.exists() else "// No sample reference available"
+sample_code2 = sample_file2.read_text(encoding="utf-8") if sample_file2.exists() else "// No sample reference available"
+sample_code3 = sample_file3.read_text(encoding="utf-8") if sample_file3.exists() else "// No sample reference available"
+
 error_logs = error_log_file.read_text(encoding="utf-8") if error_log_file.exists() else "// No error logs available"
 
-if "No sample" in sample_code:
-    print(f"⚠️  Warning: Sample file '{sample_file}' not found.")
+if "No sample" in sample_code1:
+    print(f"⚠️  Warning: Sample file '{sample_file1}' not found.")
+if "No sample" in sample_code2:
+    print(f"⚠️  Warning: Sample file '{sample_file2}' not found.")
+if "No sample" in sample_code3:
+    print(f"⚠️  Warning: Sample file '{sample_file3}' not found.")
 if "No error logs" in error_logs:
     print(f"⚠️  Warning: Error log file '{error_log_file}' not found.")
 
@@ -105,7 +158,16 @@ Your task is to write a single, complete, and compilable KUnit test file named `
 
 2.  **Reference KUnit Test (`sample_code`)**: An example KUnit test file to be used for style, structure, and formatting.
     ```c
-    {sample_code}
+    {sample_code1}
+    ```
+        **Reference 2:**
+    ```c
+    {sample_code2}
+    ```
+
+    **Reference 3:**
+    ```c
+    {sample_code3}
     ```
 
 3.  **Previous Errors to Fix (`error_logs`)**: A log of compilation errors from previous attempts. Your generated code must not repeat these errors.
@@ -121,7 +183,7 @@ Your task is to write a single, complete, and compilable KUnit test file named `
 
 2.  **Implement Test Cases**:
     * Write the C code for each planned test case.
-    * Strictly adhere to the coding style, macro usage, and overall structure of the `{sample_code}` reference file.
+    * Strictly adhere to the coding style, macro usage, and overall structure of the `{sample_code2}` reference file.
     * Copy every function from `{func_code}` into the test file and declare it as `static`. This is required to make them directly callable by the tests.
     * Define only the minimal mock structs and helper functions necessary for the tests. Do not generate any code that results in `-Wunused-function` or `-Wunused-variable` warnings.
 
