@@ -77,13 +77,13 @@ from openai import OpenAI
 # ----------------------
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="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",
+    api_key="skNITHIN-or-v1-92e7db00db0cfc7b8620de564b6772b180dcfeb062489850eeeda8e0d08e4285",
 )
 
 # ----------------------
 # Configuration
 # ----------------------
-MODEL_NAME ="deepseek/deepseek-chat-v3.1:free"  # You can change to other Gemini variants
+MODEL_NAME ="deepseek/deepseek-chat-v3.1:free"#mini variants
 TEMPERATURE = 0.2
 
 
