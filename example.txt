@@ -1,5 +1,1 @@
-api_key="skNITHIN-or-v1-92e7db00db0cfc7b8620de564b6772b180dcfeb062489850eeeda8e0d08e4285"
-
-hfNITHIN_HxIEOPudnZTvxsoGvjpAFiUuImoFQbyZpw
-
-skNITHIN-or-v1-51621f9a522536cef0ebcf6c7144b0f89acd83bf2739debf5fb8e68fe3070131
+sk-or-v1-873b453e9ae0a0632bc611d274cc87d0e4a9d77a9f67d803f6a1c8d33542862dnithin
