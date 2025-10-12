@@ -1,2 +1,1 @@
-
-skNITHIN-or-v1-06749fd5c5ea1a5619c935a465d723bff0eda8575c95286ced8476941dd970f1
+awk '/^# Totals:/ { gsub("pass:", "", $3); gsub("fail:", "", $4); total_pass+=$3; total_fail+=$4 } END { printf "----------------------------------------\n"; printf "✅ KUNIT GRAND TOTALS\n"; printf "----------------------------------------\n"; printf "PASSED: %d\n", total_pass; printf "FAILED: %d\n", total_fail; printf "----------------------------------------\n"; }'
