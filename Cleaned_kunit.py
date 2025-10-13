@@ -32,5 +32,5 @@ def clean_files_in_folder(folder_path: str, extensions=(".txt", ".c", ".py")):
 
 
 if __name__ == "__main__":
-    folder_to_clean = "./functions_extract"  # change this to your folder
+    folder_to_clean = "./generated_tests"  # change this to your folder
     clean_files_in_folder(folder_to_clean, extensions=(".c", ".txt", ".py"))

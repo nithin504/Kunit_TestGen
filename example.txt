@@ -148,7 +148,7 @@ class KUnitTestGenerator:
         if not cfg_path.exists():
             print(f"⚠️  No my_pinctrl.config found at '{cfg_path}' — skipping.")
             return
-        config_line = f"CONFIG_{test_name.upper()}=m"
+        config_line = f"CONFIG_{test_name.upper()}=y"
         cfg_text = cfg_path.read_text(encoding="utf-8")
         if config_line not in cfg_text:
             with open(cfg_path, "a", encoding="utf-8") as f:
@@ -186,8 +186,9 @@ class KUnitTestGenerator:
         test_name = f"{func_file_path.stem}_kunit_test"
         out_file = self.output_dir / f"{test_name}.c"
         context = self._load_context_files()
-
-        for attempt in range(1, self.max_retries + 1):
+        #self._compile_and_check=True
+        for attempt in range(1, 6):
+        #while self._compile_and_check()==True:
             print(f"\n🔹 Generating test for {func_file_path.name} (Attempt {attempt}/{self.max_retries})...")
 
             final_prompt = self.prompt_template.format(func_code=func_code, **context)

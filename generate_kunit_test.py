@@ -36,7 +36,7 @@ output_dir.mkdir(parents=True, exist_ok=True)
 # Setup Gemini Pro Model
 # ----------------------
 # Initialize the Gemini 1.5 Flash model, a current and efficient model.
-model = genai.GenerativeModel('gemini-2.0-flash-lite')
+model = genai.GenerativeModel('gemini-2.0-flash')
 
 # Configuration for the generation process
 generation_config = genai.GenerationConfig(
@@ -68,7 +68,10 @@ def query_model(prompt: str) -> str:
         # Handle potential API errors gracefully
         print(f"An error occurred while querying the model: {e}")
         return f"// Error generating test: {e}"
-'''# ----------------------
+# ----------------------
+
+'''
+
 # Setup OpenAI Client for OpenRouter
 from openai import OpenAI
 
@@ -77,13 +80,13 @@ from openai import OpenAI
 # ----------------------
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="skNITHIN-or-v1-92e7db00db0cfc7b8620de564b6772b180dcfeb062489850eeeda8e0d08e4285",
+    api_key="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",
 )
 
 # ----------------------
 # Configuration
 # ----------------------
-MODEL_NAME ="deepseek/deepseek-chat-v3.1:free"#mini variants
+MODEL_NAME ="qwen/qwen3-coder:free" #mini variants
 TEMPERATURE = 0.2
 
 
@@ -107,13 +110,15 @@ def query_model(prompt: str) -> str:
                 {"role": "user", "content": prompt}
             ],
             temperature=TEMPERATURE,
-            max_tokens=4096,  # Increased token limit to prevent incomplete code generation
+            max_tokens=9053,  # Increased token limit to prevent incomplete code generation
             
         )
         return completion.choices[0].message.content
     except Exception as e:
         print(f"An error occurred while querying the model: {e}")
         return f"// Error generating response: {e}"
+
+
 # ----------------------
 # Read sample KUnit test for context
 # ----------------------
@@ -139,7 +144,7 @@ if "No error logs" in error_logs:
 # Main loop to generate tests
 # ----------------------
 # Iterate over each C function file in the specified directory.
-for func_file in functions_dir.glob("*.c"):
+for func_file in functions_dir.glob("amd_gpio_probe.c"):
     func_code = func_file.read_text(encoding="utf-8")
 
     # Construct the detailed prompt for the model
@@ -170,10 +175,7 @@ Your task is to write a single, complete, and compilable KUnit test file named `
     {sample_code3}
     ```
 
-3.  **Previous Errors to Fix (`error_logs`)**: A log of compilation errors from previous attempts. Your generated code must not repeat these errors.
-    ```
-    {error_logs}
-    ```
+
 
 ## Strict Instructions
 
