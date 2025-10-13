@@ -118,24 +118,7 @@ class KUnitTestGenerator:
             print(f"📦 Backup of main Kconfig created: {backup_path}")
 
         main_kconfig_text = main_kconfig_path.read_text(encoding="utf-8")
-        if new_source_line not in main_kconfig_text:
-            lines = main_kconfig_text.splitlines()
-            updated_lines = []
-            inserted = False
-            for line in lines:
-                if 'source "drivers/pinctrl/actions/Kconfig"' in line and not inserted:
-                    updated_lines.append(new_source_line)
-                    inserted = True
-                updated_lines.append(line)
-            if not inserted:
-                updated_lines.append(new_source_line)
-            
-            main_kconfig_path.write_text("\n".join(updated_lines) + "\n", encoding="utf-8")
-            print(f"✅ Inserted '{new_source_line}' into main Kconfig.")
-        else:
-            print("ℹ️  Main Kconfig source entry already exists.")
 
-        # --- Part 2: Add the specific test entry to our custom Kconfig file ---
         custom_kconfig_path = self.base_dir / "Kconfig"
         config_name = test_name.upper()
         
@@ -146,15 +129,17 @@ class KUnitTestGenerator:
             f"\tdefault n\n"
         )
 
-        if not custom_kconfig_path.exists():
-            custom_kconfig_path.write_text(kconfig_entry.strip(), encoding="utf-8")
+        if not main_kconfig_path.exists():
+            main_kconfig_path.write_text(kconfig_entry.strip(), encoding="utf-8")
             print(f"✅ Created custom Kconfig and added entry for {config_name}")
         else:
-            text = custom_kconfig_path.read_text(encoding="utf-8")
+            text = main_kconfig_path.read_text(encoding="utf-8")
             if f"config {config_name}" not in text:
-                with open(custom_kconfig_path, "a", encoding="utf-8") as f:
-                    f.write(kconfig_entry)
-                print(f"🧩 Added Kconfig entry for {config_name}")
+            for line in lines:
+                            if 'source "drivers/pinctrl/actions/Kconfig"' in line and not inserted:
+                                    with open(main_kconfig_path, "a", encoding="utf-8") as f:
+                                        f.write(kconfig_entry)
+                                    print(f"🧩 Added Kconfig entry for {config_name}")
             else:
                 print(f"ℹ️  Kconfig entry for {config_name} already exists.")
         
