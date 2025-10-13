@@ -91,23 +91,58 @@ class KUnitTestGenerator:
                 f.write("\n" + entry + "\n")
             print(f"🧩 Added to Makefile: {entry}")
 
-    def _update_kconfig(self, test_name: str):
-        kconfig_path = self.base_dir / "Kconfig"
+    def _update_kconfig(self):
+        """
+        Inserts a custom Kconfig source entry before the line:
+        source "drivers/pinctrl/actions/Kconfig"
+        in /home/amd/linux/drivers/pinctrl/Kconfig.
+        Creates a backup if not already made.
+        """
+        kconfig_path = Path("/home/amd/linux/drivers/pinctrl/Kconfig")
+        backup_path = kconfig_path.with_suffix(".KunitGen_backup")
+    
+        # Ensure file exists
         if not kconfig_path.exists():
-            print("⚠️  No Kconfig found — skipping.")
-            return
-        config_name = test_name.upper()
-        kconfig_entry = f"""
-config {config_name}
-    tristate "Enable {test_name} KUnit test"
-    depends on KUNIT
-    default n
-"""
-        text = kconfig_path.read_text(encoding="utf-8")
-        if config_name not in text:
+            print(f"❌ Kconfig not found at {kconfig_path}")
+            return False
+    
+        # Backup before modifying (only once)
+        if not backup_path.exists():
+            backup_path.write_text(kconfig_path.read_text(encoding="utf-8"), encoding="utf-8")
+            print(f"📦 Backup created: {backup_path}")
+    
+        # The new Kconfig include line you want to add
+        new_line = 'source "drivers/pinctrl/my_pinctrl/Kconfig"'
+    
+        # Read lines
+        lines = kconfig_path.read_text(encoding="utf-8").splitlines()
+    
+        # Skip if line already exists
+        if any(new_line in line for line in lines):
+            print("ℹ️  Kconfig source already exists. Skipping insert.")
+            return True
+    
+        updated_lines = []
+        inserted = False
+    
+        for line in lines:
+            # Insert our new source before actions/Kconfig
+            if 'source "drivers/pinctrl/actions/Kconfig"' in line and not inserted:
+                updated_lines.append(new_line)
+                inserted = True
+            updated_lines.append(line)
+    
+        # Save the updated file
+        kconfig_path.write_text("\n".join(updated_lines) + "\n", encoding="utf-8")
+    
+        if inserted:
+            print("✅ Inserted new Kconfig source before 'actions/Kconfig'.")
+        else:
+            print("⚠️  Target line not found. Appended entry at the end instead.")
             with open(kconfig_path, "a", encoding="utf-8") as f:
-                f.write(kconfig_entry)
-            print(f"🧩 Added {config_name} entry to Kconfig.")
+                f.write("\n" + new_line + "\n")
+    
+        return True
 
     def _update_test_config(self, test_name: str):
         cfg_path = self.base_dir / "my_pinctrl.config"
