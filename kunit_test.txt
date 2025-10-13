@@ -1,15 +1,84 @@
-ERROR:root:make[5]: *** No rule to make target 'drivers/pinctrl/amd_gpio_suspend_kunit_test.o', needed by 'drivers/pinctrl/built-in.a'.  Stop.
-make[5]: *** Waiting for unfinished jobs....
-make[4]: *** [../scripts/Makefile.build:554: drivers/pinctrl] Error 2
-make[4]: *** Waiting for unfinished jobs....
-make[3]: *** [../scripts/Makefile.build:554: drivers] Error 2
-make[2]: *** [/home/amd/linux/Makefile:2003: .] Error 2
-make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Error 2
-make: *** [Makefile:248: __sub-make] Error 2
+kunit_generation_prompt = """
+You are an expert Linux kernel developer with deep experience in writing **high-quality, coverage-focused KUnit tests** for modern kernels (v6.10+).
 
-[17:38:46] Configuring KUnit Kernel ...
-[17:38:46] Building KUnit Kernel ...
-Populating config with:
-$ make ARCH=x86_64 O=.kunit olddefconfig
-Building with:
-$ make all compile_commands.json scripts_gdb ARCH=x86_64 O=.kunit --jobs=4
+Your task is to write a single, complete, and compilable KUnit test file named `generated_kunit_test.c`. The test must achieve **maximum coverage** for all functions in the provided source, including **edge cases, all branches, and uncommon paths**.
+
+---
+
+### Source Input
+1. **Functions to test (`func_code`)**
+```c
+{func_code}
+```
+
+2. **Reference KUnit Tests**
+```c
+{sample_code1}
+```
+```c
+{sample_code2}
+```
+```c
+{sample_code3}
+```
+
+3. **Previous Errors (`error_logs`)**
+```
+{error_logs}
+```
+
+---
+
+### Instructions
+
+#### 1. Code Compatibility and API Rules
+- Always match current KUnit APIs:
+  - Use `kunit_kzalloc(test, sizeof(*ptr), GFP_KERNEL)` (3 arguments).
+  - Use `.test_cases` instead of `.cases` inside `struct kunit_suite`.
+  - End with `kunit_test_suite(suite_name);` **without `&`**.
+- Do not use deprecated macros or fields.
+- Ensure the generated code **compiles without warnings or errors**.
+
+#### 2. Test Implementation
+- Cover every control and error path in `{func_code}`.
+- Include tests for:
+  - Valid inputs
+  - Invalid or boundary values (`NULL`, `-1`, `0`, `INT_MAX`, etc.)
+  - Rare or error-triggering conditions
+- Use descriptive test names: `test_<function>_<scenario>`.
+
+#### 3. Test Structure
+- Each test function signature:
+  ```c
+  static void test_<name>(struct kunit *test)
+  ```
+- Use:
+  - `KUNIT_EXPECT_EQ(test, ...)`
+  - `KUNIT_EXPECT_PTR_EQ(test, ...)`
+  - `KUNIT_EXPECT_TRUE/FALSE(test, ...)`
+
+- Collect tests in:
+  ```c
+  static struct kunit_case suite_test_cases[] = {
+      KUNIT_CASE(test_func_example),
+      {}
+  };
+  ```
+
+- Define the suite as:
+  ```c
+  static struct kunit_suite suite_name = {
+      .name = "suite_name",
+      .test_cases = suite_test_cases,
+  };
+
+  kunit_test_suite(suite_name);
+  ```
+
+#### 4. Integration
+- Copy all tested functions from `{func_code}` as `static` into the test file.
+- Create minimal mocks only if required for compilation.
+- Do not include markdown, comments, or explanations — output **pure C code** only.
+
+---
+"""
