@@ -102,49 +102,47 @@ class KUnitTestGenerator:
         Ensures the main kernel Kconfig sources the custom test Kconfig file,
         and adds the specific config entry for the given test to that file.
         """
-        # --- Part 1: Ensure the main kernel Kconfig sources our custom file ---
         main_kconfig_path = Path("/home/amd/linux/drivers/pinctrl/Kconfig")
         backup_path = main_kconfig_path.with_suffix(".KunitGen_backup")
-        # This path assumes `my_pinctrl` is where your tests are located inside `drivers/pinctrl`
-        new_source_line = 'source "drivers/pinctrl/my_pinctrl/Kconfig"'
-
-        if not main_kconfig_path.exists():
-            print(f"❌ Main Kconfig not found at {main_kconfig_path}")
-            return False
-
-        # Create backup if it doesn't exist
-        if not backup_path.exists():
-            backup_path.write_text(main_kconfig_path.read_text(encoding="utf-8"), encoding="utf-8")
-            print(f"📦 Backup of main Kconfig created: {backup_path}")
-
-        main_kconfig_text = main_kconfig_path.read_text(encoding="utf-8")
-
-        custom_kconfig_path = self.base_dir / "Kconfig"
         config_name = test_name.upper()
-        
+    
         kconfig_entry = (
             f"\nconfig {config_name}\n"
             f'\tbool "KUnit test for {test_name}"\n'
             f"\tdepends on KUNIT\n"
             f"\tdefault n\n"
         )
-
+    
         if not main_kconfig_path.exists():
-            main_kconfig_path.write_text(kconfig_entry.strip(), encoding="utf-8")
-            print(f"✅ Created custom Kconfig and added entry for {config_name}")
-        else:
-            text = main_kconfig_path.read_text(encoding="utf-8")
-            if f"config {config_name}" not in text:
-            for line in lines:
-                            if 'source "drivers/pinctrl/actions/Kconfig"' in line and not inserted:
-                                    with open(main_kconfig_path, "a", encoding="utf-8") as f:
-                                        f.write(kconfig_entry)
-                                    print(f"🧩 Added Kconfig entry for {config_name}")
-            else:
-                print(f"ℹ️  Kconfig entry for {config_name} already exists.")
-        
-        return True
+            print(f"❌ Main Kconfig not found at {main_kconfig_path}")
+            return False
+    
+        # Backup if not exists
+        if not backup_path.exists():
+            backup_path.write_text(main_kconfig_path.read_text(encoding="utf-8"), encoding="utf-8")
+            print(f"📦 Backup created: {backup_path}")
+    
+        lines = main_kconfig_path.read_text(encoding="utf-8").splitlines(keepends=True)
+    
+        # Only add if entry doesn't already exist
+        if any(f"config {config_name}" in line for line in lines):
+            print(f"ℹ️ Kconfig entry for {config_name} already exists.")
+            return True
+    
+        # Insert kconfig_entry before the first occurrence of source/actions Kconfig or endif
+        new_lines = []
+        inserted = False
+        for line in lines:
+            if (('source "drivers/pinctrl/actions/Kconfig"' in line) or ('endif' in line)) and not inserted:
+                new_lines.append(kconfig_entry)  # insert before the line
+                inserted = True
+            new_lines.append(line)
+    
+        # Write back
+        main_kconfig_path.write_text("".join(new_lines), encoding="utf-8")
+        print(f"✅ Added Kconfig entry for {config_name}")
 
+        return True
     def _update_test_config(self, test_name: str):
         cfg_path = Path("/home/amd/linux/my_pinctrl.config")
         if not cfg_path.exists():
