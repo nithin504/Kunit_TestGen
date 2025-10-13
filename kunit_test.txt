@@ -1,4 +1,4 @@
-kunit_generation_prompt = """
+kunit_generation_prompt = f"""
 You are an expert Linux kernel developer with deep experience in writing **high-quality, coverage-focused KUnit tests** for modern kernels (v6.10+).
 
 Your task is to write a single, complete, and compilable KUnit test file named `generated_kunit_test.c`. The test must achieve **maximum coverage** for all functions in the provided source, including **edge cases, all branches, and uncommon paths**.
