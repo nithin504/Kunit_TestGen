@@ -1,1 +1,13 @@
-awk '/^# Totals:/ { gsub("pass:", "", $3); gsub("fail:", "", $4); total_pass+=$3; total_fail+=$4 } END { printf "----------------------------------------\n"; printf "✅ KUNIT GRAND TOTALS\n"; printf "----------------------------------------\n"; printf "PASSED: %d\n", total_pass; printf "FAILED: %d\n", total_fail; printf "----------------------------------------\n"; }'
+# 3. Find all the test modules that were successfully compiled
+echo "--- Build finished. Finding all successfully compiled tests... ---"
+SUCCESSFUL_TESTS=$(find . -path "*/*kunit_test.ko" -printf "%f\n" | sed 's/\.ko$//')
+
+if [ -z "$SUCCESSFUL_TESTS" ]; then
+    echo "--- No KUnit tests were compiled successfully. Check compilation errors. ---"
+else
+    # 4. Run all the successfully compiled tests and get the final count
+    echo "--- Running the following successfully compiled tests: ---"
+    echo "$SUCCESSFUL_TESTS"
+    echo "---------------------------------------------------------"
+    ./tools/testing/kunit/kunit.py run $SUCCESSFUL_TESTS | awk '/^# Totals:/ { gsub("pass:", "", $3); gsub("fail:", "", $4); total_pass+=$3; total_fail+=$4 } END { printf "----------------------------------------\n"; printf "✅ KUNIT GRAND TOTALS\n"; printf "----------------------------------------\n"; printf "PASSED: %d\n", total_pass; printf "FAILED: %d\n", total_fail; printf "----------------------------------------\n"; }'
+fi
