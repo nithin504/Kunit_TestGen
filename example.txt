@@ -1,107 +1,185 @@
-import re
+import os
 import subprocess
+from pathlib import Path
+from openai import OpenAI
+from dotenv import load_dotenv
+
+# Import your prompt template
+from KunitGeneration.model_interface.prompts.unittest_kunit_prompts import kunit_generation_prompt
+
 
 class KUnitTestGenerator:
-    # ... (your existing __init__, _load_environment, _query_model, etc.)
+    """
+    A class to generate, compile, and validate KUnit tests for C functions.
+    Automatically regenerates tests until compilation passes successfully.
+    """
 
-    # ---------------- File Injection Helpers ----------------
+    def __init__(self, main_test_dir: Path, model_name: str, temperature: float, max_retries: int = 3):
+        if not main_test_dir.is_dir():
+            raise FileNotFoundError(f"The specified test directory does not exist: {main_test_dir}")
+
+        # --- Paths ---
+        self.base_dir = main_test_dir
+        self.functions_dir = self.base_dir / "test_functions"
+        self.output_dir = self.base_dir / "generated_tests"
+        self.sample_files = [
+            self.base_dir / "reference_testcases" / "kunit_test1.c",
+            self.base_dir / "reference_testcases" / "kunit_test2.c",
+            self.base_dir / "reference_testcases" / "kunit_test3.c",
+        ]
+        self.error_log_file = self.base_dir / "compilation_log" / "compile_error.txt"
+
+        # --- Model ---
+        self.model_name = model_name
+        self.temperature = temperature
+        self.max_tokens = 8192
+        self.max_retries = max_retries
+
+        # --- Setup ---
+        self._load_environment()
+        self.client = self._initialize_client()
+        self.prompt_template = kunit_generation_prompt
+
+    # ---------------- Environment Setup ----------------
+    def _load_environment(self):
+        load_dotenv()
+        self.api_key = os.environ.get("NVIDIA_API_KEY")
+        if not self.api_key:
+            raise ValueError("NVIDIA_API_KEY environment variable not set.")
+
+    def _initialize_client(self):
+        return OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=self.api_key)
+
+    # ---------------- Model Query ----------------
+    def _query_model(self, prompt: str) -> str:
+        try:
+            completion = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+            )
+            return completion.choices[0].message.content
+        except Exception as e:
+            print(f"An error occurred while querying the model: {e}")
+            return f"// Error generating response: {e}"
+
+    # ---------------- Context Loader ----------------
+    def _load_context_files(self) -> dict:
+        print("Reading sample KUnit test files and error logs...")
+        context = {}
+        def safe_read(p: Path, fallback="// Missing file"): 
+            return p.read_text(encoding="utf-8") if p.exists() else fallback
+
+        context["sample_code1"] = safe_read(self.sample_files[0])
+        context["sample_code2"] = safe_read(self.sample_files[1])
+        context["sample_code3"] = safe_read(self.sample_files[2])
+        context["error_logs"] = safe_read(self.error_log_file, "// No previous error logs")
+
+        return context
+
+    # ---------------- Kernel Build Integration ----------------
     def _update_makefile(self, test_name: str):
-        """Add the generated test .o entry to Makefile if missing."""
         makefile_path = self.base_dir / "Makefile"
         if not makefile_path.exists():
-            raise FileNotFoundError(f"Makefile not found at {makefile_path}")
-
-        makefile_text = makefile_path.read_text(encoding="utf-8")
-        obj_line = f"obj-$(CONFIG_{test_name.upper()}) += {test_name}.o"
-
-        if obj_line not in makefile_text:
-            makefile_text += f"\n{obj_line}\n"
-            makefile_path.write_text(makefile_text, encoding="utf-8")
-            print(f"🧩 Added '{obj_line}' to Makefile.")
+            print("⚠️  No Makefile found — skipping Makefile update.")
+            return
+        entry = f"obj-$(CONFIG_{test_name.upper()}) += {test_name}.o"
+        text = makefile_path.read_text(encoding="utf-8")
+        if entry not in text:
+            with open(makefile_path, "a", encoding="utf-8") as f:
+                f.write("\n" + entry + "\n")
+            print(f"🧩 Added to Makefile: {entry}")
 
     def _update_kconfig(self, test_name: str):
-        """Add a config entry for the test in Kconfig if not present."""
         kconfig_path = self.base_dir / "Kconfig"
         if not kconfig_path.exists():
-            raise FileNotFoundError(f"Kconfig not found at {kconfig_path}")
-
-        kconfig_text = kconfig_path.read_text(encoding="utf-8")
-        config_name = f"{test_name.upper()}"
-
-        if config_name not in kconfig_text:
-            new_entry = f"""
-config {test_name.upper()}
+            print("⚠️  No Kconfig found — skipping.")
+            return
+        config_name = test_name.upper()
+        kconfig_entry = f"""
+config {config_name}
     tristate "Enable {test_name} KUnit test"
     depends on KUNIT
     default n
 """
-            kconfig_text += "\n" + new_entry
-            kconfig_path.write_text(kconfig_text, encoding="utf-8")
-            print(f"🧩 Added config entry for '{test_name}' in Kconfig.")
+        text = kconfig_path.read_text(encoding="utf-8")
+        if config_name not in text:
+            with open(kconfig_path, "a", encoding="utf-8") as f:
+                f.write(kconfig_entry)
+            print(f"🧩 Added {config_name} entry to Kconfig.")
 
     def _update_test_config(self, test_name: str):
-        """Enable the new test in the custom config file (e.g., my_pinctrl.config)."""
-        config_path = self.base_dir / "my_pinctrl.config"
-        if not config_path.exists():
-            raise FileNotFoundError(f"Config file not found: {config_path}")
-
-        config_text = config_path.read_text(encoding="utf-8")
+        cfg_path = self.base_dir / "my_pinctrl.config"
+        if not cfg_path.exists():
+            print("⚠️  No my_pinctrl.config found — skipping.")
+            return
         config_line = f"CONFIG_{test_name.upper()}=y"
+        cfg_text = cfg_path.read_text(encoding="utf-8")
+        if config_line not in cfg_text:
+            with open(cfg_path, "a", encoding="utf-8") as f:
+                f.write("\n" + config_line + "\n")
+            print(f"🧩 Enabled {config_line} in my_pinctrl.config.")
 
-        if config_line not in config_text:
-            config_text += f"\n{config_line}\n"
-            config_path.write_text(config_text, encoding="utf-8")
-            print(f"🧩 Enabled '{config_line}' in my_pinctrl.config.")
-
-    # ---------------- Kernel Build & Compilation ----------------
     def _compile_kunit_test(self, test_name: str) -> bool:
-        """Run kernel kunit build for this test and return True if success."""
-        print(f"⚙️  Building kernel KUnit test for '{test_name}'...")
-
-        build_cmd = (
+        """Compile using kernel's KUnit infrastructure."""
+        print(f"⚙️  Running KUnit compile for '{test_name}'...")
+        cmd = (
             f"./tools/testing/kunit/kunit.py run "
             f"--kunitconfig=my_pinctrl.config "
             f"--arch=x86_64 --raw_output > {self.error_log_file} 2>&1"
         )
+        result = subprocess.run(cmd, shell=True)
+        log_text = self.error_log_file.read_text(encoding="utf-8") if self.error_log_file.exists() else ""
 
-        process = subprocess.run(build_cmd, shell=True)
-        log_content = self.error_log_file.read_text(encoding="utf-8") if self.error_log_file.exists() else ""
-
-        if "error:" in log_content.lower() or process.returncode != 0:
-            print(f"❌ Compilation failed for {test_name}.")
+        if "error:" in log_text.lower() or result.returncode != 0:
+            print(f"❌ Compilation failed for {test_name}. Check compile_error.txt.")
             return False
-
-        print(f"✅ Compilation successful for {test_name}.")
+        print(f"✅ Compilation passed for {test_name}.")
         return True
 
-    # ---------------- Main Generation with Kernel Integration ----------------
+    # ---------------- Main Test Generation ----------------
     def generate_test_for_function(self, func_file_path: Path):
-        test_name = func_file_path.stem + "_kunit_test"
-        print(f"\n🔹 Generating kernel-integrated test for {func_file_path.name}...")
-
         func_code = func_file_path.read_text(encoding="utf-8")
-        context = self._load_context_files()
+        test_name = f"{func_file_path.stem}_kunit_test"
         out_file = self.output_dir / f"{test_name}.c"
+        context = self._load_context_files()
 
         for attempt in range(1, self.max_retries + 1):
-            print(f"Attempt {attempt}/{self.max_retries}...")
+            print(f"\n🔹 Generating test for {func_file_path.name} (Attempt {attempt}/{self.max_retries})...")
 
             final_prompt = self.prompt_template.format(func_code=func_code, **context)
-            response_text = self._query_model(final_prompt)
-            out_file.write_text(response_text, encoding="utf-8")
+            generated_test = self._query_model(final_prompt)
+            out_file.write_text(generated_test, encoding="utf-8")
 
-            # Update kernel build files dynamically
+            # Update kernel build metadata
             self._update_makefile(test_name)
             self._update_kconfig(test_name)
             self._update_test_config(test_name)
 
-            # Compile via kernel build
+            # Run kernel compilation
             if self._compile_kunit_test(test_name):
-                print(f"✅ Test '{test_name}' compiled successfully on attempt {attempt}.")
-                break
+                print(f"✅ Test '{test_name}' built successfully on attempt {attempt}.")
+                return
             else:
+                # Feed back error logs to model
                 if self.error_log_file.exists():
                     context["error_logs"] = self.error_log_file.read_text(encoding="utf-8")
-                    print("🔁 Feeding kernel compilation errors back into model for regeneration...")
-                if attempt == self.max_retries:
-                    print(f"❌ Failed to build test '{test_name}' after {self.max_retries} attempts.")
+                print("🔁 Retrying with compile error feedback...")
+
+        print(f"❌ Failed to build a compilable test for {func_file_path.name} after {self.max_retries} attempts.")
+
+    def run(self):
+        print(f"--- Starting KUnit Test Generation in '{self.base_dir}' ---")
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.error_log_file.parent.mkdir(parents=True, exist_ok=True)
+
+        func_files = list(self.functions_dir.glob("*.c"))
+        if not func_files:
+            print(f"❌ No C files found in '{self.functions_dir}'")
+            return
+
+        for func_file in func_files:
+            self.generate_test_for_function(func_file)
+
+        print("\n--- ✅ All tests processed. ---")
