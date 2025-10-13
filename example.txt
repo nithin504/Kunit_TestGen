@@ -5,6 +5,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 # Import your prompt template
+# Ensure this path is correct relative to where you run the script
 from KunitGeneration.model_interface.prompts.unittest_kunit_prompts import kunit_generation_prompt
 
 
@@ -59,7 +60,9 @@ class KUnitTestGenerator:
                 temperature=self.temperature,
                 max_tokens=self.max_tokens,
             )
-            return completion.choices[0].message.content
+            response = completion.choices[0].message.content
+            # Clean up model output from code fences
+            return response.replace("```c", "").replace("```", "").strip()
         except Exception as e:
             print(f"An error occurred while querying the model: {e}")
             return f"// Error generating response: {e}"
@@ -68,7 +71,7 @@ class KUnitTestGenerator:
     def _load_context_files(self) -> dict:
         print("Reading sample KUnit test files and error logs...")
         context = {}
-        def safe_read(p: Path, fallback="// Missing file"): 
+        def safe_read(p: Path, fallback="// Missing file"):
             return p.read_text(encoding="utf-8") if p.exists() else fallback
 
         context["sample_code1"] = safe_read(self.sample_files[0])
@@ -80,97 +83,118 @@ class KUnitTestGenerator:
 
     # ---------------- Kernel Build Integration ----------------
     def _update_makefile(self, test_name: str):
-        makefile_path = self.base_dir / "Makefile"
+        # NOTE: This assumes the Makefile is in the same directory as the test functions.
+        makefile_path = Path("/home/amd/linux/drivers/pinctrl/Makefile")
         if not makefile_path.exists():
-            print("⚠️  No Makefile found — skipping Makefile update.")
+            print(f"⚠️  No Makefile found at '{makefile_path}' — skipping Makefile update.")
             return
-        entry = f"obj-$(CONFIG_{test_name.upper()}) += {test_name}.o"
+            
+        config_name = test_name.upper()
+        entry = f"obj-$(CONFIG_{config_name}) += {test_name}.o"
         text = makefile_path.read_text(encoding="utf-8")
         if entry not in text:
             with open(makefile_path, "a", encoding="utf-8") as f:
                 f.write("\n" + entry + "\n")
             print(f"🧩 Added to Makefile: {entry}")
 
-    def _update_kconfig(self):
+    def _update_kconfig(self, test_name: str):
         """
-        Inserts a custom Kconfig source entry before the line:
-        source "drivers/pinctrl/actions/Kconfig"
-        in /home/amd/linux/drivers/pinctrl/Kconfig.
-        Creates a backup if not already made.
+        Ensures the main kernel Kconfig sources the custom test Kconfig file,
+        and adds the specific config entry for the given test to that file.
         """
-        kconfig_path = Path("/home/amd/linux/drivers/pinctrl/Kconfig")
-        backup_path = kconfig_path.with_suffix(".KunitGen_backup")
-    
-        # Ensure file exists
-        if not kconfig_path.exists():
-            print(f"❌ Kconfig not found at {kconfig_path}")
+        # --- Part 1: Ensure the main kernel Kconfig sources our custom file ---
+        main_kconfig_path = Path("/home/amd/linux/drivers/pinctrl/Kconfig")
+        backup_path = main_kconfig_path.with_suffix(".KunitGen_backup")
+        # This path assumes `my_pinctrl` is where your tests are located inside `drivers/pinctrl`
+        new_source_line = 'source "drivers/pinctrl/my_pinctrl/Kconfig"'
+
+        if not main_kconfig_path.exists():
+            print(f"❌ Main Kconfig not found at {main_kconfig_path}")
             return False
-    
-        # Backup before modifying (only once)
+
+        # Create backup if it doesn't exist
         if not backup_path.exists():
-            backup_path.write_text(kconfig_path.read_text(encoding="utf-8"), encoding="utf-8")
-            print(f"📦 Backup created: {backup_path}")
-    
-        # The new Kconfig include line you want to add
-        new_line = 'source "drivers/pinctrl/my_pinctrl/Kconfig"'
-    
-        # Read lines
-        lines = kconfig_path.read_text(encoding="utf-8").splitlines()
-    
-        # Skip if line already exists
-        if any(new_line in line for line in lines):
-            print("ℹ️  Kconfig source already exists. Skipping insert.")
-            return True
-    
-        updated_lines = []
-        inserted = False
-    
-        for line in lines:
-            # Insert our new source before actions/Kconfig
-            if 'source "drivers/pinctrl/actions/Kconfig"' in line and not inserted:
-                updated_lines.append(new_line)
-                inserted = True
-            updated_lines.append(line)
-    
-        # Save the updated file
-        kconfig_path.write_text("\n".join(updated_lines) + "\n", encoding="utf-8")
-    
-        if inserted:
-            print("✅ Inserted new Kconfig source before 'actions/Kconfig'.")
+            backup_path.write_text(main_kconfig_path.read_text(encoding="utf-8"), encoding="utf-8")
+            print(f"📦 Backup of main Kconfig created: {backup_path}")
+
+        main_kconfig_text = main_kconfig_path.read_text(encoding="utf-8")
+        if new_source_line not in main_kconfig_text:
+            lines = main_kconfig_text.splitlines()
+            updated_lines = []
+            inserted = False
+            for line in lines:
+                if 'source "drivers/pinctrl/actions/Kconfig"' in line and not inserted:
+                    updated_lines.append(new_source_line)
+                    inserted = True
+                updated_lines.append(line)
+            if not inserted:
+                updated_lines.append(new_source_line)
+            
+            main_kconfig_path.write_text("\n".join(updated_lines) + "\n", encoding="utf-8")
+            print(f"✅ Inserted '{new_source_line}' into main Kconfig.")
         else:
-            print("⚠️  Target line not found. Appended entry at the end instead.")
-            with open(kconfig_path, "a", encoding="utf-8") as f:
-                f.write("\n" + new_line + "\n")
-    
+            print("ℹ️  Main Kconfig source entry already exists.")
+
+        # --- Part 2: Add the specific test entry to our custom Kconfig file ---
+        custom_kconfig_path = self.base_dir / "Kconfig"
+        config_name = test_name.upper()
+        
+        kconfig_entry = (
+            f"\nconfig {config_name}\n"
+            f'\tbool "KUnit test for {test_name}"\n'
+            f"\tdepends on KUNIT\n"
+            f"\tdefault n\n"
+        )
+
+        if not custom_kconfig_path.exists():
+            custom_kconfig_path.write_text(kconfig_entry.strip(), encoding="utf-8")
+            print(f"✅ Created custom Kconfig and added entry for {config_name}")
+        else:
+            text = custom_kconfig_path.read_text(encoding="utf-8")
+            if f"config {config_name}" not in text:
+                with open(custom_kconfig_path, "a", encoding="utf-8") as f:
+                    f.write(kconfig_entry)
+                print(f"🧩 Added Kconfig entry for {config_name}")
+            else:
+                print(f"ℹ️  Kconfig entry for {config_name} already exists.")
+        
         return True
 
     def _update_test_config(self, test_name: str):
-        cfg_path = self.base_dir / "my_pinctrl.config"
+        cfg_path = Path("/home/amd/linux/my_pinctrl.config")
         if not cfg_path.exists():
-            print("⚠️  No my_pinctrl.config found — skipping.")
+            print(f"⚠️  No my_pinctrl.config found at '{cfg_path}' — skipping.")
             return
-        config_line = f"CONFIG_{test_name.upper()}=y"
+        config_line = f"CONFIG_{test_name.upper()}=m"
         cfg_text = cfg_path.read_text(encoding="utf-8")
         if config_line not in cfg_text:
             with open(cfg_path, "a", encoding="utf-8") as f:
                 f.write("\n" + config_line + "\n")
             print(f"🧩 Enabled {config_line} in my_pinctrl.config.")
 
-    def _compile_kunit_test(self, test_name: str) -> bool:
-        """Compile using kernel's KUnit infrastructure."""
-        print(f"⚙️  Running KUnit compile for '{test_name}'...")
+    def _compile_and_check(self) -> bool:
+        """Compile using the kernel's make command and check for errors."""
+        print("⚙️  Running kernel build to check for compilation errors...")
+        
+        # NOTE: Hardcoded path to kernel source.
+        kernel_dir = Path("/home/amd/linux")
+        config_file = self.base_dir.parent / "my_pinctrl.config"
         cmd = (
-            f"./tools/testing/kunit/kunit.py run "
-            f"--kunitconfig=my_pinctrl.config "
-            f"--arch=x86_64 --raw_output > {self.error_log_file} 2>&1"
+            f"cp {config_file} {kernel_dir}/.config && "
+            f"make -C {kernel_dir} olddefconfig && "
+            f"make -C {kernel_dir} -k -j$(nproc)"
         )
-        result = subprocess.run(cmd, shell=True)
-        log_text = self.error_log_file.read_text(encoding="utf-8") if self.error_log_file.exists() else ""
 
-        if "error:" in log_text.lower() or result.returncode != 0:
-            print(f"❌ Compilation failed for {test_name}. Check compile_error.txt.")
+        with open(self.error_log_file, "w", encoding="utf-8") as log_file:
+             result = subprocess.run(cmd, shell=True, stdout=log_file, stderr=subprocess.STDOUT)
+
+        log_text = self.error_log_file.read_text(encoding="utf-8")
+
+        if "error:" in log_text.lower() or " undefined reference to" in log_text.lower():
+            print(f"❌ Compilation failed. Check '{self.error_log_file.name}'.")
             return False
-        print(f"✅ Compilation passed for {test_name}.")
+            
+        print("✅ Compilation successful.")
         return True
 
     # ---------------- Main Test Generation ----------------
@@ -187,17 +211,15 @@ class KUnitTestGenerator:
             generated_test = self._query_model(final_prompt)
             out_file.write_text(generated_test, encoding="utf-8")
 
-            # Update kernel build metadata
+            # Update kernel build metadata before compiling
             self._update_makefile(test_name)
             self._update_kconfig(test_name)
             self._update_test_config(test_name)
 
-            # Run kernel compilation
-            if self._compile_kunit_test(test_name):
+            if self._compile_and_check():
                 print(f"✅ Test '{test_name}' built successfully on attempt {attempt}.")
                 return
             else:
-                # Feed back error logs to model
                 if self.error_log_file.exists():
                     context["error_logs"] = self.error_log_file.read_text(encoding="utf-8")
                 print("🔁 Retrying with compile error feedback...")
@@ -218,3 +240,4 @@ class KUnitTestGenerator:
             self.generate_test_for_function(func_file)
 
         print("\n--- ✅ All tests processed. ---")
+
