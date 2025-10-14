@@ -1,128 +1,105 @@
-kunit_generation_prompt = """
+kunit_generation_prompt="""
 You are an expert Linux kernel developer with deep experience in writing **high-quality, coverage-focused KUnit tests**.
 
-Your task is to write a single, complete, and compilable KUnit test file. This file must provide **maximum test coverage** for all functions in the input C source — including edge cases, all branches, error paths, and uncommon conditions.
+Your task is to write a single, complete, and compilable KUnit test file . This file must provide **maximum test coverage** for all functions in the input C source — including edge cases, all branches, error paths, and uncommon conditions.
 
+1.  **Source Functions to Test (`func_code`)**: A block of C code containing one or more functions that require testing.
+    ```c
+    {func_code}
+    ```
+
+2.  **Reference KUnit Test (`sample_code`)**: An example KUnit test file to be used for style, structure, and formatting.
+    ```c
+    {sample_code1}
+    ```
+
+    **Reference 2:**
+    ```c
+    {sample_code2}
+    ```
+
+    **Reference 3:**
+    ```c
+    {sample_code3}
+    ```
+
+3.  **Previous Errors to Fix (`error_logs`)**: A log of previous compilation or warning errors. Your generated code must not repeat these errors.
+    ```
+    {error_logs}
+    ```
+
+## Critical Rules to Avoid Compilation Errors
+
+Based on the `error_logs`, you **MUST** adhere to the following rules:
+
+1.  **Correct `kunit_kzalloc` Usage**: When calling `kunit_kzalloc`, you **must** provide all three required arguments: `(struct kunit *test, size_t size, gfp_t gfp)`. The third argument, the memory allocation flag, should almost always be `GFP_KERNEL`.
+    - **Incorrect**: `kunit_kzalloc(test, sizeof(*data))`
+    - **Correct**: `kunit_kzalloc(test, sizeof(*data), GFP_KERNEL)`
+
+2.  **Correct `kunit_suite` Structure**: The member name for the array of test cases within `struct kunit_suite` is `test_cases`, **not** `cases`.
+    - **Incorrect**: `.cases = your_test_case_array,`
+    - **Correct**: `.test_cases = your_test_case_array,`
+
+3.  **Correct `kunit_test_suite` Macro Call**: The `kunit_test_suite()` macro takes the suite struct object directly, **not a pointer** to it.
+    - **Incorrect**: `kunit_test_suite(&my_suite);`
+    - **Correct**: `kunit_test_suite(my_suite);`
+
+
+## Instructions
+
+### 1. Analyze and Plan
+- All test code must be in **one compilable C file**.
+- Copy tested functions into the file and declare them `static`.
+- Include all necessary headers:
+  - `<linux/gpio/driver.h>` (for `struct gpio_chip`)
+  - `<linux/io.h>` (for `readl`, `writel`)
+  - `<linux/spinlock.h>`, `<linux/bitops.h>`, `<linux/slab.h>`, etc.
+
+- Define minimal mock versions of private structs (e.g., `struct amd_gpio`) if needed.
+### 2.Critical Compilation Rules
 ---
+1. **`kunit_kzalloc`**
+   - Must use 3 arguments: `kunit_kzalloc(test, sizeof(*ptr), GFP_KERNEL);`
+2. **KUnit Suite Definitions**
+   - Use `.test_cases = case_array` (not `.cases`)
+   - Use `kunit_test_suite(suite);` (no `&suite`)
+3. **Struct & Type Declarations**
+   - Do not declare `struct xyz` in parameter lists if used elsewhere.
+   - Fully define structs used in multiple places.
+4. **Function Usage**
+   - Include headers or define mocks for kernel helpers (e.g., `gpiochip_get_data()`).
+   - Ensure types match kernel APIs exactly.
+5. **Macros**
+   - Include headers for macros like `BIT()`, `raw_spin_lock_irqsave()`, `readl()`, `writel()`.
+6. **Timestamps**
+   - Avoid issues from future-dated build artifacts like `.o.cmd`. Don’t include or reference them.
+---
+### 3. Implement KUnit Test Cases
+TESTING STRATEGY
 
-## INPUTS
-
-1. Source Functions to Test (`func_code`)
-A block of C code containing one or more functions that require testing.
+For each function in `{func_code}`:
+- Cover all branches: `if`, `else`, early returns
+- Cover valid and invalid inputs (e.g., `NULL`, `0`, `-1`, `INT_MAX`)
+- Check boundary cases, error handling, and side effects
+Use the following format:
 ```c
-{func_code}
-2. Reference KUnit Test Style (sample_code)
-Example KUnit test files that demonstrate the correct style and formatting.
-
-```c
-
-{sample_code1}
+static void test_<function>_<scenario>(struct kunit *test)
 ```
-```c
+Use KUNIT_EXPECT_* macros to validate behavior.
+### 4. Code Integration
+- Copy all tested functions from `{func_code}` into the test file and mark them `static` to make them directly callable.
+- Define only **minimal mock structs** or test helpers. Avoid unused code and suppress `-Wunused-*` warnings.
+### 5. Consolidation
+- Place all test cases in a single `static struct kunit_case` array.
+- Define one `static struct kunit_suite` that references this array using `.test_cases`.
+- Use `kunit_test_suite()` to register the test suite.
 
-{sample_code2}
-```
-```c
-
-{sample_code3}
-```
-3. Previous Compilation Errors (error_logs)
-Compilation or warning errors from previous attempts. These must not be repeated.
-```c
-{error_logs}
-```
-
-##REQUIRED STRUCTURE & RULES
-Your generated code must be a single .c file that passes compilation with make under KUnit. To ensure this:
-
-1. General Structure
-Include all necessary Linux kernel headers (e.g., #include <linux/gpio/driver.h>, #include <linux/io.h>, #include <kunit/test.h>) to avoid undefined types or implicit declarations.
-
-All functions from {func_code} must be copied as static functions into the KUnit test file so they are testable.
-
-Only define minimal mock structures (e.g., for struct amd_gpio) if they are not publicly declared elsewhere. Avoid forward declarations without definitions.
-
-Do not assume internal kernel symbols unless explicitly mocked.
-
-All file-local structures must be fully defined to avoid "incomplete type" errors.
-
-2. Critical Compilation Rules
-Correct kunit_kzalloc Usage:
-
-Must provide all three arguments: kunit_kzalloc(test, sizeof(*ptr), GFP_KERNEL);
-
-Correct KUnit Suite Syntax:
-
-Use .test_cases = my_cases_array — not .cases = ...
-
-Use kunit_test_suite(my_suite); — never pass a pointer.
-
-Correct Type Declarations:
-
-Always include headers for used structs:
-
-struct gpio_chip → #include <linux/gpio/driver.h>
-
-struct amd_gpio → provide definition or include correct header.
-
-Do not declare a struct in a parameter list if it's used elsewhere. Declare it fully before.
-
-##Correct Function Usage:
-
-For functions like gpiochip_get_data(), include required headers or provide test-only mock replacements.
-
-If mocking such functions, ensure types match exactly and return valid test objects.
-
-MMIO and Locking Macros:
-
-For readl(), writel(), BIT(), and raw_spin_lock_irqsave(), ensure the appropriate kernel headers are included:
-
-<linux/io.h>
-
-<linux/spinlock.h>
-
-<linux/bitops.h>
-
-Clock/Time Warnings:
-
-If .o.cmd or other files are out-of-sync, avoid timestamp issues by avoiding build system side-effects. No touch files or shell commands should be present in the generated test.
-
-##TEST CASE STRATEGY
-For each function in {func_code}, implement full control path coverage:
-
-All if, else, and switch branches
-
-All return values and error conditions
-
-Edge and boundary inputs (e.g. 0, -1, INT_MAX)
-
-Null or invalid pointer conditions where relevant
-
-Each test case must be:
-
-Named using the pattern: test_<function_name>_<condition>
-
-Declared using static void <name>(struct kunit *test)
-
-Collected into a static struct kunit_case[] array
-
-Registered using a static struct kunit_suite and kunit_test_suite() call
-
-##OUTPUT REQUIREMENTS
-Output only the pure C source code of the test file, ready to save as generated_kunit_test.c
-
-Do not include:
-
-Markdown formatting (no ```c)
-
-Explanations, comments, or placeholder tags
-
-##DO NOT:
-Use undefined types or functions
-
-Forward-declare structs used in more than one place
-
-Pass incorrect arguments to macros or kernel functions
-
-Break Linux kernel style or KUnit style in {sample_code2}
-""
+## Output Requirements
+- Output only the **pure C source code** of the generated file `generated_kunit_test.c`.
+- Do **not** include:
+  - Markdown (e.g., ```c)
+  - Placeholders
+  - Comments
+  - Explanations
+- The output must be **compilable**, **style-compliant**, and **warning-free**, strictly following the **Critical Rules** above.
+"""
