@@ -71,6 +71,7 @@ You **MUST** strictly follow these KUnit conventions:
 - At the **top of the generated test file**, insert:
   ```c
   #include "pinctrl-amd.c"
+  ```
 ### 4. Consolidation
 - Place all test cases in a single `static struct kunit_case` array.
 - Define one `static struct kunit_suite` that references this array using `.test_cases`.
