@@ -1,89 +1,128 @@
 kunit_generation_prompt = """
 You are an expert Linux kernel developer with deep experience in writing **high-quality, coverage-focused KUnit tests**.
 
-Your task is to write a single, complete, and compilable KUnit test file named `generated_kunit_test.c`. This file must provide **maximum test coverage** for all functions in the input C source — including edge cases, all branches, error paths, and uncommon conditions.
+Your task is to write a single, complete, and compilable KUnit test file. This file must provide **maximum test coverage** for all functions in the input C source — including edge cases, all branches, error paths, and uncommon conditions.
 
 ---
 
-## Input Specification
+## INPUTS
 
-1.  **Source Functions to Test (`func_code`)**: A block of C code containing one or more functions that require testing.
-    ```c
-    {func_code}
-    ```
+1. Source Functions to Test (`func_code`)
+A block of C code containing one or more functions that require testing.
+```c
+{func_code}
+2. Reference KUnit Test Style (sample_code)
+Example KUnit test files that demonstrate the correct style and formatting.
 
-2.  **Reference KUnit Tests**
-    ```c
-    {sample_code1}
-    ```
-    ```c
-    {sample_code2}
-    ```
-    ```c
-    {sample_code3}
-    ```
+```c
 
-3.  **Previous Errors to Fix (`error_logs`)**: A log of previous compilation or warning errors. Your generated code must not repeat these errors.
-    ```
-    {error_logs}
-    ```
+{sample_code1}
+```
+```c
 
----
+{sample_code2}
+```
+```c
 
-## Critical Rules to Avoid Compilation Errors
+{sample_code3}
+```
+3. Previous Compilation Errors (error_logs)
+Compilation or warning errors from previous attempts. These must not be repeated.
+```c
+{error_logs}
+```
 
-You **MUST** strictly follow these KUnit conventions:
+##REQUIRED STRUCTURE & RULES
+Your generated code must be a single .c file that passes compilation with make under KUnit. To ensure this:
 
-1. **Correct `kunit_kzalloc` Usage**  
-   - Must always include the third argument `GFP_KERNEL`.  
-     - Incorrect: `kunit_kzalloc(test, sizeof(*data))`  
-     - Correct:  `kunit_kzalloc(test, sizeof(*data), GFP_KERNEL)`
+1. General Structure
+Include all necessary Linux kernel headers (e.g., #include <linux/gpio/driver.h>, #include <linux/io.h>, #include <kunit/test.h>) to avoid undefined types or implicit declarations.
 
-2. **Correct `kunit_suite` Structure**  
-   - Must use `.test_cases`, not `.cases`.  
-     - Incorrect: `.cases = tests,`  
-     - Correct:  `.test_cases = tests,`
+All functions from {func_code} must be copied as static functions into the KUnit test file so they are testable.
 
-3. **Correct `kunit_test_suite` Macro Call**  
-   - Pass the suite variable directly, **without `&`**.  
-     - Incorrect: `kunit_test_suite(&suite);`  
-     - Correct:  `kunit_test_suite(suite);`
+Only define minimal mock structures (e.g., for struct amd_gpio) if they are not publicly declared elsewhere. Avoid forward declarations without definitions.
 
----
+Do not assume internal kernel symbols unless explicitly mocked.
 
-## Instructions
+All file-local structures must be fully defined to avoid "incomplete type" errors.
 
-### 1. Analyze and Plan
-- Examine every function in `{func_code}`.
-- Generate comprehensive test cases to cover:
-  - All logical branches (`if`, `else`, `switch`)
-  - All return paths
-  - Boundary and invalid inputs (`NULL`, `0`, `-1`, `INT_MAX`, etc.)
-  - Error and uncommon conditions
-- Name tests as `test_<function>_<scenario>`.
+2. Critical Compilation Rules
+Correct kunit_kzalloc Usage:
 
-### 2. Implement KUnit Test Cases
-- Write **multiple** tests per function to ensure **maximum coverage**.
-- Use `KUNIT_EXPECT_*` macros to validate outputs, side effects, and return values.
-- Follow the same code style, layout, and indentation as `{sample_code2}`.
+Must provide all three arguments: kunit_kzalloc(test, sizeof(*ptr), GFP_KERNEL);
 
-### 3. Code Integration
-- At the **top of the generated test file**, insert:
-  ```c
-  #include "pinctrl-amd.c"
-  ```
-### 4. Consolidation
-- Place all test cases in a single `static struct kunit_case` array.
-- Define one `static struct kunit_suite` that references this array using `.test_cases`.
-- Use `kunit_test_suite()` to register the test suite.
+Correct KUnit Suite Syntax:
 
-## Output Requirements
+Use .test_cases = my_cases_array — not .cases = ...
 
-- Output only the **pure C source code** of the generated file `generated_kunit_test.c`.
-- Do **not** include:
-  - Markdown (e.g., ```c)
-  - Placeholders
-  - Comments
-  - Explanations
-- The output must be **compilable**, **style-compliant**, and **warning-free**, strictly following the **Critical Rules** above.
-"""
+Use kunit_test_suite(my_suite); — never pass a pointer.
+
+Correct Type Declarations:
+
+Always include headers for used structs:
+
+struct gpio_chip → #include <linux/gpio/driver.h>
+
+struct amd_gpio → provide definition or include correct header.
+
+Do not declare a struct in a parameter list if it's used elsewhere. Declare it fully before.
+
+##Correct Function Usage:
+
+For functions like gpiochip_get_data(), include required headers or provide test-only mock replacements.
+
+If mocking such functions, ensure types match exactly and return valid test objects.
+
+MMIO and Locking Macros:
+
+For readl(), writel(), BIT(), and raw_spin_lock_irqsave(), ensure the appropriate kernel headers are included:
+
+<linux/io.h>
+
+<linux/spinlock.h>
+
+<linux/bitops.h>
+
+Clock/Time Warnings:
+
+If .o.cmd or other files are out-of-sync, avoid timestamp issues by avoiding build system side-effects. No touch files or shell commands should be present in the generated test.
+
+##TEST CASE STRATEGY
+For each function in {func_code}, implement full control path coverage:
+
+All if, else, and switch branches
+
+All return values and error conditions
+
+Edge and boundary inputs (e.g. 0, -1, INT_MAX)
+
+Null or invalid pointer conditions where relevant
+
+Each test case must be:
+
+Named using the pattern: test_<function_name>_<condition>
+
+Declared using static void <name>(struct kunit *test)
+
+Collected into a static struct kunit_case[] array
+
+Registered using a static struct kunit_suite and kunit_test_suite() call
+
+##OUTPUT REQUIREMENTS
+Output only the pure C source code of the test file, ready to save as generated_kunit_test.c
+
+Do not include:
+
+Markdown formatting (no ```c)
+
+Explanations, comments, or placeholder tags
+
+##DO NOT:
+Use undefined types or functions
+
+Forward-declare structs used in more than one place
+
+Pass incorrect arguments to macros or kernel functions
+
+Break Linux kernel style or KUnit style in {sample_code2}
+""
