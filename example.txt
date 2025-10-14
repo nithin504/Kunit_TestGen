@@ -1,1 +1,88 @@
-nithinAIzaSyAZA8iJLeVEdT17keYemXigU5PyHeWt6w4
+kunit_generation_prompt = """
+You are an expert Linux kernel developer with deep experience in writing **high-quality, coverage-focused KUnit tests**.
+
+Your task is to write a single, complete, and compilable KUnit test file named `generated_kunit_test.c`. This file must provide **maximum test coverage** for all functions in the input C source — including edge cases, all branches, error paths, and uncommon conditions.
+
+---
+
+## Input Specification
+
+1.  **Source Functions to Test (`func_code`)**: A block of C code containing one or more functions that require testing.
+    ```c
+    {func_code}
+    ```
+
+2.  **Reference KUnit Tests**
+    ```c
+    {sample_code1}
+    ```
+    ```c
+    {sample_code2}
+    ```
+    ```c
+    {sample_code3}
+    ```
+
+3.  **Previous Errors to Fix (`error_logs`)**: A log of previous compilation or warning errors. Your generated code must not repeat these errors.
+    ```
+    {error_logs}
+    ```
+
+---
+
+## Critical Rules to Avoid Compilation Errors
+
+You **MUST** strictly follow these KUnit conventions:
+
+1. **Correct `kunit_kzalloc` Usage**  
+   - Must always include the third argument `GFP_KERNEL`.  
+     - Incorrect: `kunit_kzalloc(test, sizeof(*data))`  
+     - Correct:  `kunit_kzalloc(test, sizeof(*data), GFP_KERNEL)`
+
+2. **Correct `kunit_suite` Structure**  
+   - Must use `.test_cases`, not `.cases`.  
+     - Incorrect: `.cases = tests,`  
+     - Correct:  `.test_cases = tests,`
+
+3. **Correct `kunit_test_suite` Macro Call**  
+   - Pass the suite variable directly, **without `&`**.  
+     - Incorrect: `kunit_test_suite(&suite);`  
+     - Correct:  `kunit_test_suite(suite);`
+
+---
+
+## Instructions
+
+### 1. Analyze and Plan
+- Examine every function in `{func_code}`.
+- Generate comprehensive test cases to cover:
+  - All logical branches (`if`, `else`, `switch`)
+  - All return paths
+  - Boundary and invalid inputs (`NULL`, `0`, `-1`, `INT_MAX`, etc.)
+  - Error and uncommon conditions
+- Name tests as `test_<function>_<scenario>`.
+
+### 2. Implement KUnit Test Cases
+- Write **multiple** tests per function to ensure **maximum coverage**.
+- Use `KUNIT_EXPECT_*` macros to validate outputs, side effects, and return values.
+- Follow the same code style, layout, and indentation as `{sample_code2}`.
+
+### 3. Code Integration
+- At the **top of the generated test file**, insert:
+  ```c
+  #include "pinctrl-amd.c"
+### 4. Consolidation
+- Place all test cases in a single `static struct kunit_case` array.
+- Define one `static struct kunit_suite` that references this array using `.test_cases`.
+- Use `kunit_test_suite()` to register the test suite.
+
+## Output Requirements
+
+- Output only the **pure C source code** of the generated file `generated_kunit_test.c`.
+- Do **not** include:
+  - Markdown (e.g., ```c)
+  - Placeholders
+  - Comments
+  - Explanations
+- The output must be **compilable**, **style-compliant**, and **warning-free**, strictly following the **Critical Rules** above.
+"""
