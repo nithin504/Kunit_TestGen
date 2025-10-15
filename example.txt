@@ -35,24 +35,27 @@ Your task is to write a single, complete, and compilable KUnit test file. This f
 
 2. **Correct `struct kunit_suite` Definition**:
    - Use `.test_cases = case_array` (not `.cases`)
-   - Do not assign `.cases` or `.suite_init` manually unless explicitly required
+   - Do not assign `.suite_init` manually unless explicitly required
 
 3. **Correct `kunit_test_suite` Macro Usage**:
    - Use `kunit_test_suite(suite);` — do **not** use `&suite`
 
-4. **Struct & Type Declarations**:
-   - Fully define any structs used across multiple functions
-   - Avoid forward declarations in parameter lists if the struct is used elsewhere
+4. **Struct Definitions**:
+   - Define minimal mock versions of `struct amd_gpio` with all accessed members
+   - Include `<linux/pinctrl/pinctrl.h>` to resolve `struct pinctrl_dev` and related APIs
+   - Avoid using incomplete types in `sizeof()` or pointer casts
 
-5. **Kernel API Compatibility**:
+5. **Symbol Declarations**:
+   - Declare or mock any undeclared symbols like `pmx_functions` used in the test
+   - Use correct types and initialization for arrays of `struct pinmux_function`
+
+6. **Type Compatibility**:
+   - Use `container_of()` for safe conversion between `struct pinctrl_dev *` and `struct amd_gpio *`
+   - Avoid incompatible pointer assignments
+
+7. **Kernel API Compatibility**:
    - Include headers for kernel helpers and macros:
-     - `<linux/gpio/driver.h>`, `<linux/io.h>`, `<linux/slab.h>`, `<linux/spinlock.h>`, `<linux/bitops.h>`
-   - Use correct types and signatures for kernel functions
-
-6. **Avoid Common Build Errors**:
-   - Do not reference `.cases`, `.suite_init`, or use `&suite` in `kunit_test_suite()`
-   - Avoid missing `gfp_t` in memory allocation
-   - Avoid incorrect pointer types in struct initializers
+     - `<linux/gpio/driver.h>`, `<linux/io.h>`, `<linux/slab.h>`, `<linux/spinlock.h>`, `<linux/bitops.h>`, `<linux/pinctrl/pinctrl.h>`
 
 ## Test Implementation Strategy
 
