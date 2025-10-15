@@ -30,71 +30,69 @@ Your task is to write a single, complete, and compilable KUnit test file. This f
 
 ## Critical Compilation Rules (Based on `error_logs`)
 
-1. **Correct `kunit_kzalloc` Usage**:
-   - Must use all three arguments: `kunit_kzalloc(test, sizeof(*ptr), GFP_KERNEL);`
+1. **Struct Definitions**
+   - Define minimal mock versions of `struct amd_gpio` with all accessed members (e.g., `pdev`, `iomux_base`)
+   - Include `<linux/pinctrl/pinctrl.h>` to resolve `struct pinctrl_dev`
+   - Do not use `sizeof(struct pinctrl_dev)` unless the type is fully defined
 
-2. **Correct `struct kunit_suite` Definition**:
-   - Use `.test_cases = case_array` (not `.cases`)
-   - Do not assign `.suite_init` manually unless explicitly required
+2. **Pointer Compatibility**
+   - Do not assign `struct pinctrl_dev *` to `struct amd_gpio *` directly
+   - Use `container_of()` if `pinctrl_dev` is embedded in `amd_gpio`
+   - Avoid incompatible pointer casts and initializations
 
-3. **Correct `kunit_test_suite` Macro Usage**:
-   - Use `kunit_test_suite(suite);` — do **not** use `&suite`
-
-4. **Struct Definitions**:
-   - Define minimal mock versions of `struct amd_gpio` with all accessed members
-   - Include `<linux/pinctrl/pinctrl.h>` to resolve `struct pinctrl_dev` and related APIs
-   - Avoid using incomplete types in `sizeof()` or pointer casts
-   -#include <kunit/test.h>,#include <linux/pinctrl/pinctrl.h>,#include <linux/gpio/driver.h>,#include <linux/slab.h>
-   -Define mock structs like struct amd_gpio if needed
-   -Use container_of() for safe type conversions
-   -Declare all external symbols used in your test
-
-5. **Symbol Declarations**:
-   - Declare or mock any undeclared symbols like `pmx_functions` used in the test
+3. **Symbol Declarations**
+   - Declare or mock any undeclared symbols like `pmx_functions`
    - Use correct types and initialization for arrays of `struct pinmux_function`
 
-6. **Type Compatibility**:
-   - Use `container_of()` for safe conversion between `struct pinctrl_dev *` and `struct amd_gpio *`
-   - Avoid incompatible pointer assignments
+4. **Memory Allocation**
+   - Use `kunit_kzalloc(test, sizeof(*ptr), GFP_KERNEL)` with all three arguments
+   - Do not allocate memory for incomplete types
 
-7. **Kernel API Compatibility**:
+5. **KUnit Suite Structure**
+   - Use `.test_cases = case_array` (not `.cases`)
+   - Use `kunit_test_suite(suite);` — do **not** use `&suite`
+
+6. **Kernel API Compatibility**
    - Include headers for kernel helpers and macros:
-     - `<linux/gpio/driver.h>`, `<linux/io.h>`, `<linux/slab.h>`, `<linux/spinlock.h>`, `<linux/bitops.h>`, `<linux/pinctrl/pinctrl.h>`
+     - `<linux/gpio/driver.h>`, `<linux/io.h>`, `<linux/slab.h>`, `<linux/spinlock.h>`, `<linux/bitops.h>`, `<linux/pinctrl/pinctrl.h>`, `<linux/platform_device.h>`
+
+7. **Warnings**
+   - Avoid unused variables like `dummy_pctldev`
+   - Suppress `-Wunused-variable` by removing or using declared variables
 
 ## Test Implementation Strategy
 
-For each function in `{func_code}`:
-- Cover all branches: `if`, `else`, early returns
-- Cover valid and invalid inputs (e.g., `NULL`, `0`, `-1`, `INT_MAX`)
-- Check boundary cases, error handling, and side effects
+    For each function in `{func_code}`:
+    - Cover all branches: `if`, `else`, early returns
+    - Cover valid and invalid inputs (e.g., `NULL`, `0`, `-1`, `INT_MAX`)
+    - Check boundary cases, error handling, and side effects
+    
+    Use the following format:
+    ```c
+    static void test_<function>_<scenario>(struct kunit *test)
 
-Use the following format:
-```c
-static void test_<function>_<scenario>(struct kunit *test)
-Use KUNIT_EXPECT_* macros to validate behavior.
+##Code Integration
+    Copy all tested functions from {func_code} into the test file and mark them static
+    
+    Define only minimal mock structs or test helpers
+    
+    Place all test cases in a single static struct kunit_case array
+    
+    Define one static struct kunit_suite that references this array using .test_cases
+    
+    Use kunit_test_suite(suite); to register the test suite
 
-Code Integration
-Copy all tested functions from {func_code} into the test file and mark them static
-
-Define only minimal mock structs or test helpers
-
-Place all test cases in a single static struct kunit_case array
-
-Define one static struct kunit_suite that references this array using .test_cases
-
-Use kunit_test_suite(suite); to register the test suite
-
-Output Requirements
-Output only the pure C source code of the generated file generated_kunit_test.c
-
-Do not include:
-
-Markdown (e.g., ```c)
-
-Placeholders
-
-Comments
-
-Explanations
-
-The output must be compilable, style-compliant, and warning-free, strictly following the Critical Rules above. """
+##Output Requirements
+    Output only the pure C source code of the generated file generated_kunit_test.c
+    
+    Do not include:
+    
+    Markdown (e.g., ```c)
+    
+    Placeholders
+    
+    Comments
+    
+    Explanations
+    
+    The output must be compilable, style-compliant, and warning-free, strictly following the Critical Rules above. """
