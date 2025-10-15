@@ -44,6 +44,10 @@ Your task is to write a single, complete, and compilable KUnit test file. This f
    - Define minimal mock versions of `struct amd_gpio` with all accessed members
    - Include `<linux/pinctrl/pinctrl.h>` to resolve `struct pinctrl_dev` and related APIs
    - Avoid using incomplete types in `sizeof()` or pointer casts
+   -#include <kunit/test.h>,#include <linux/pinctrl/pinctrl.h>,#include <linux/gpio/driver.h>,#include <linux/slab.h>
+   -Define mock structs like struct amd_gpio if needed
+   -Use container_of() for safe type conversions
+   -Declare all external symbols used in your test
 
 5. **Symbol Declarations**:
    - Declare or mock any undeclared symbols like `pmx_functions` used in the test
