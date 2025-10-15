@@ -64,3 +64,30 @@ For each function in `{func_code}`:
 Use the following format:
 ```c
 static void test_<function>_<scenario>(struct kunit *test)
+Use KUNIT_EXPECT_* macros to validate behavior.
+
+Code Integration
+Copy all tested functions from {func_code} into the test file and mark them static
+
+Define only minimal mock structs or test helpers
+
+Place all test cases in a single static struct kunit_case array
+
+Define one static struct kunit_suite that references this array using .test_cases
+
+Use kunit_test_suite(suite); to register the test suite
+
+Output Requirements
+Output only the pure C source code of the generated file generated_kunit_test.c
+
+Do not include:
+
+Markdown (e.g., ```c)
+
+Placeholders
+
+Comments
+
+Explanations
+
+The output must be compilable, style-compliant, and warning-free, strictly following the Critical Rules above. """
