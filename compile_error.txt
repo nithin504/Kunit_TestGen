@@ -1,52 +1,50 @@
-ERROR:root:../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘amd_get_groups’:
-../drivers/pinctrl/amd_get_groups_kunit_test.c:14:22: error: invalid use of undefined type ‘struct amd_gpio’
-   14 |         if (!gpio_dev->iomux_base) {
-      |                      ^~
-In file included from ../include/linux/device.h:15,
-                 from ../include/linux/platform_device.h:13,
-                 from ../drivers/pinctrl/amd_get_groups_kunit_test.c:5:
-../drivers/pinctrl/amd_get_groups_kunit_test.c:15:34: error: invalid use of undefined type ‘struct amd_gpio’
-   15 |                 dev_err(&gpio_dev->pdev->dev, "iomux function %d group not supported\n", selector);
-      |                                  ^~
-../include/linux/dev_printk.h:110:25: note: in definition of macro ‘dev_printk_index_wrap’
-  110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-      |                         ^~~
-../drivers/pinctrl/amd_get_groups_kunit_test.c:15:17: note: in expansion of macro ‘dev_err’
-   15 |                 dev_err(&gpio_dev->pdev->dev, "iomux function %d group not supported\n", selector);
-      |                 ^~~~~~~
-../drivers/pinctrl/amd_get_groups_kunit_test.c:19:19: error: ‘pmx_functions’ undeclared (first use in this function); did you mean ‘pinfunction’?
-   19 |         *groups = pmx_functions[selector].groups;
-      |                   ^~~~~~~~~~~~~
-      |                   pinfunction
-../drivers/pinctrl/amd_get_groups_kunit_test.c:19:19: note: each undeclared identifier is reported only once for each function it appears in
+ERROR:root:../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘test_amd_get_groups_valid_selector’:
+../drivers/pinctrl/amd_get_groups_kunit_test.c:70:34: error: assignment of read-only member ‘ngroups’
+   70 |         pmx_functions[0].ngroups = 2;
+      |                                  ^
+In file included from ../drivers/pinctrl/amd_get_groups_kunit_test.c:2:
+../include/kunit/test.h:776:39: error: invalid initializer
+  776 |         const typeof(right) __right = (right);                                 \
+      |                                       ^
+../include/kunit/test.h:820:9: note: in expansion of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  820 |         KUNIT_BASE_BINARY_ASSERTION(test,                                      \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:992:9: note: in expansion of macro ‘KUNIT_BINARY_PTR_ASSERTION’
+  992 |         KUNIT_BINARY_PTR_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:989:9: note: in expansion of macro ‘KUNIT_EXPECT_PTR_EQ_MSG’
+  989 |         KUNIT_EXPECT_PTR_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_get_groups_kunit_test.c:75:9: note: in expansion of macro ‘KUNIT_EXPECT_PTR_EQ’
+   75 |         KUNIT_EXPECT_PTR_EQ(test, groups, test_groups);
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘test_amd_get_groups_edge_selector’:
+../drivers/pinctrl/amd_get_groups_kunit_test.c:88:50: error: assignment of read-only member ‘ngroups’
+   88 |         pmx_functions[MAX_FUNCTIONS - 1].ngroups = 1;
+      |                                                  ^
+../include/kunit/test.h:776:39: error: invalid initializer
+  776 |         const typeof(right) __right = (right);                                 \
+      |                                       ^
+../include/kunit/test.h:820:9: note: in expansion of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  820 |         KUNIT_BASE_BINARY_ASSERTION(test,                                      \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:992:9: note: in expansion of macro ‘KUNIT_BINARY_PTR_ASSERTION’
+  992 |         KUNIT_BINARY_PTR_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:989:9: note: in expansion of macro ‘KUNIT_EXPECT_PTR_EQ_MSG’
+  989 |         KUNIT_EXPECT_PTR_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_get_groups_kunit_test.c:93:9: note: in expansion of macro ‘KUNIT_EXPECT_PTR_EQ’
+   93 |         KUNIT_EXPECT_PTR_EQ(test, groups, test_groups);
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘test_amd_get_groups_uninitialized_entry’:
+../drivers/pinctrl/amd_get_groups_kunit_test.c:105:34: error: assignment of read-only member ‘ngroups’
+  105 |         pmx_functions[5].ngroups = 0;
+      |                                  ^
 ../drivers/pinctrl/amd_get_groups_kunit_test.c: At top level:
-../drivers/pinctrl/amd_get_groups_kunit_test.c:39:7: warning: no previous prototype for ‘set_mock_pinctrl_dev_get_drvdata’ [-Wmissing-prototypes]
-   39 | void *set_mock_pinctrl_dev_get_drvdata(struct pinctrl_dev *pctldev)
-      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘set_mock_pinctrl_dev_get_drvdata’:
-../drivers/pinctrl/amd_get_groups_kunit_test.c:41:23: error: invalid use of undefined type ‘struct pinctrl_dev’
-   41 |         return pctldev->driver_data;
-      |                       ^~
-../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘test_amd_get_groups_iomux_base_null’:
-../drivers/pinctrl/amd_get_groups_kunit_test.c:48:28: error: storage size of ‘pctldev’ isn’t known
-   48 |         struct pinctrl_dev pctldev;
-      |                            ^~~~~~~
-../drivers/pinctrl/amd_get_groups_kunit_test.c:48:28: warning: unused variable ‘pctldev’ [-Wunused-variable]
-../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘test_amd_get_groups_selector_out_of_bounds’:
-../drivers/pinctrl/amd_get_groups_kunit_test.c:60:28: error: storage size of ‘pctldev’ isn’t known
-   60 |         struct pinctrl_dev pctldev;
-      |                            ^~~~~~~
-../drivers/pinctrl/amd_get_groups_kunit_test.c:60:28: warning: unused variable ‘pctldev’ [-Wunused-variable]
-../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘test_amd_get_groups_valid_selector’:
-../drivers/pinctrl/amd_get_groups_kunit_test.c:72:28: error: storage size of ‘pctldev’ isn’t known
-   72 |         struct pinctrl_dev pctldev;
-      |                            ^~~~~~~
-../drivers/pinctrl/amd_get_groups_kunit_test.c:72:28: warning: unused variable ‘pctldev’ [-Wunused-variable]
-../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘set_mock_pinctrl_dev_get_drvdata’:
-../drivers/pinctrl/amd_get_groups_kunit_test.c:42:1: error: control reaches end of non-void function [-Werror=return-type]
-   42 | }
-      | ^
-cc1: some warnings being treated as errors
+../drivers/pinctrl/amd_get_groups_kunit_test.c:24:27: error: storage size of ‘mock_pctrldev’ isn’t known
+   24 | static struct pinctrl_dev mock_pctrldev;
+      |                           ^~~~~~~~~~~~~
 make[5]: *** [../scripts/Makefile.build:287: drivers/pinctrl/amd_get_groups_kunit_test.o] Error 1
 make[5]: *** Waiting for unfinished jobs....
 ../drivers/pinctrl/amd_pinconf_set_kunit_test.c:10:41: warning: ‘struct amd_gpio’ declared inside parameter list will not be visible outside of this definition or declaration
@@ -406,8 +404,8 @@ make[2]: *** [/home/amd/linux/Makefile:2003: .] Error 2
 make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Error 2
 make: *** [Makefile:248: __sub-make] Error 2
 
-[20:19:26] Configuring KUnit Kernel ...
-[20:19:26] Building KUnit Kernel ...
+[11:56:27] Configuring KUnit Kernel ...
+[11:56:27] Building KUnit Kernel ...
 Populating config with:
 $ make ARCH=x86_64 O=.kunit olddefconfig
 Building with:
