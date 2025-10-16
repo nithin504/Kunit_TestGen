@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0
 #include <kunit/test.h>
 #include <linux/pinctrl/pinctrl.h>
-#include <linux/pinctrl/pinmux.h> // ✅ Corrected header
+#include <linux/pinctrl/pinmux.h> // Corrected header
 #include <linux/platform_device.h>
 #include <linux/device.h>
 #include <linux/err.h>
 #include <linux/slab.h>
 
-// ✅ Define or include the amd_gpio struct (normally in amd_gpio.h)
+// Minimal mock definition of struct amd_gpio
 struct amd_gpio {
 	void __iomem *iomux_base;
 	struct platform_device *pdev;
 };
 
-// ✅ Define pinmux_function for testing
+// Define a mock pinmux_function struct
 struct pinmux_function {
 	const char * const *groups;
 	const unsigned int ngroups;
@@ -22,33 +22,30 @@ struct pinmux_function {
 #define MAX_FUNCTIONS 10
 static struct pinmux_function pmx_functions[MAX_FUNCTIONS];
 
-// ✅ Mocks and test state
 static struct amd_gpio *mock_gpio_dev;
 static struct platform_device mock_pdev;
 static struct pinctrl_dev *mock_pctrldev;
 
-// ✅ Mock driver data getter
+// Override pinctrl_dev_get_drvdata for testing
 static void *mock_pinctrl_dev_get_drvdata(struct pinctrl_dev *pctldev)
 {
 	return mock_gpio_dev;
 }
-
 #define pinctrl_dev_get_drvdata mock_pinctrl_dev_get_drvdata
 
-// ✅ Implementation of the function under test (normally in pinctrl-amd.c)
-static int amd_get_groups(struct pinctrl_dev *pctrldev, unsigned int selector,
-			  const char * const **groups,
-			  unsigned int * const num_groups)
+// The function under test
+static int amd_get_groups(struct pinctrl_dev *pctldev, unsigned int selector,
+                          const char * const **groups,
+                          unsigned int * const num_groups)
 {
-	struct amd_gpio *gpio_dev = pinctrl_dev_get_drvdata(pctrldev);
+	struct amd_gpio *gpio_dev = pinctrl_dev_get_drvdata(pctldev);
 
-	// ✅ Bounds check to prevent OOB access
+	// Check bounds
 	if (selector >= MAX_FUNCTIONS)
 		return -EINVAL;
 
 	if (!gpio_dev->iomux_base) {
-		dev_err(&gpio_dev->pdev->dev,
-			"iomux function %d group not supported\n", selector);
+		dev_err(&gpio_dev->pdev->dev, "iomux function %d group not supported\n", selector);
 		return -EINVAL;
 	}
 
@@ -57,7 +54,7 @@ static int amd_get_groups(struct pinctrl_dev *pctrldev, unsigned int selector,
 	return 0;
 }
 
-// ✅ Test cases
+/* ===================== TEST CASES ===================== */
 
 static void test_amd_get_groups_null_iomux_base(struct kunit *test)
 {
@@ -138,7 +135,8 @@ static void test_amd_get_groups_invalid_selector(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
 }
 
-// ✅ Test init function
+/* ===================== INIT FUNCTION ===================== */
+
 static int amd_get_groups_test_init(struct kunit *test)
 {
 	mock_gpio_dev = kunit_kzalloc(test, sizeof(*mock_gpio_dev), GFP_KERNEL);
@@ -155,7 +153,8 @@ static int amd_get_groups_test_init(struct kunit *test)
 	return 0;
 }
 
-// ✅ Register test cases
+/* ===================== TEST SUITE ===================== */
+
 static struct kunit_case amd_get_groups_test_cases[] = {
 	KUNIT_CASE(test_amd_get_groups_null_iomux_base),
 	KUNIT_CASE(test_amd_get_groups_valid_selector),
