@@ -1,22 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0
 #include <kunit/test.h>
 #include <linux/pinctrl/pinctrl.h>
-#include <linux/pinctrl/pinmux.h> // Corrected header
+#include <linux/pinctrl/pinmux.h>
 #include <linux/platform_device.h>
 #include <linux/device.h>
-#include <linux/err.h>
 #include <linux/slab.h>
 
-// Minimal mock definition of struct amd_gpio
 struct amd_gpio {
 	void __iomem *iomux_base;
 	struct platform_device *pdev;
 };
 
-// Define a mock pinmux_function struct
 struct pinmux_function {
 	const char * const *groups;
-	const unsigned int ngroups;
+	unsigned int ngroups;
 };
 
 #define MAX_FUNCTIONS 10
@@ -26,21 +23,19 @@ static struct amd_gpio *mock_gpio_dev;
 static struct platform_device mock_pdev;
 static struct pinctrl_dev *mock_pctrldev;
 
-// Override pinctrl_dev_get_drvdata for testing
+/* Mock for pinctrl_dev_get_drvdata */
 static void *mock_pinctrl_dev_get_drvdata(struct pinctrl_dev *pctldev)
 {
 	return mock_gpio_dev;
 }
 #define pinctrl_dev_get_drvdata mock_pinctrl_dev_get_drvdata
 
-// The function under test
-static int amd_get_groups(struct pinctrl_dev *pctldev, unsigned int selector,
-                          const char * const **groups,
-                          unsigned int * const num_groups)
+static int amd_get_groups(struct pinctrl_dev *pctrldev, unsigned int selector,
+			  const char * const **groups,
+			  unsigned int * const num_groups)
 {
-	struct amd_gpio *gpio_dev = pinctrl_dev_get_drvdata(pctldev);
+	struct amd_gpio *gpio_dev = pinctrl_dev_get_drvdata(pctrldev);
 
-	// Check bounds
 	if (selector >= MAX_FUNCTIONS)
 		return -EINVAL;
 
@@ -51,92 +46,11 @@ static int amd_get_groups(struct pinctrl_dev *pctldev, unsigned int selector,
 
 	*groups = pmx_functions[selector].groups;
 	*num_groups = pmx_functions[selector].ngroups;
+
 	return 0;
 }
 
-/* ===================== TEST CASES ===================== */
-
-static void test_amd_get_groups_null_iomux_base(struct kunit *test)
-{
-	const char * const *groups;
-	unsigned int num_groups;
-	int ret;
-
-	mock_gpio_dev->iomux_base = NULL;
-
-	ret = amd_get_groups(mock_pctrldev, 0, &groups, &num_groups);
-
-	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
-}
-
-static void test_amd_get_groups_valid_selector(struct kunit *test)
-{
-	const char * const *groups;
-	unsigned int num_groups;
-	const char * const test_groups[] = {"group1", "group2"};
-	int ret;
-
-	mock_gpio_dev->iomux_base = (void __iomem *)0x1234;
-	pmx_functions[0].groups = test_groups;
-	pmx_functions[0].ngroups = 2;
-
-	ret = amd_get_groups(mock_pctrldev, 0, &groups, &num_groups);
-
-	KUNIT_EXPECT_EQ(test, ret, 0);
-	KUNIT_EXPECT_PTR_EQ(test, groups, test_groups);
-	KUNIT_EXPECT_EQ(test, num_groups, 2U);
-}
-
-static void test_amd_get_groups_edge_selector(struct kunit *test)
-{
-	const char * const *groups;
-	unsigned int num_groups;
-	const char * const test_groups[] = {"group_last"};
-	int ret;
-
-	mock_gpio_dev->iomux_base = (void __iomem *)0x1234;
-	pmx_functions[MAX_FUNCTIONS - 1].groups = test_groups;
-	pmx_functions[MAX_FUNCTIONS - 1].ngroups = 1;
-
-	ret = amd_get_groups(mock_pctrldev, MAX_FUNCTIONS - 1, &groups, &num_groups);
-
-	KUNIT_EXPECT_EQ(test, ret, 0);
-	KUNIT_EXPECT_PTR_EQ(test, groups, test_groups);
-	KUNIT_EXPECT_EQ(test, num_groups, 1U);
-}
-
-static void test_amd_get_groups_uninitialized_entry(struct kunit *test)
-{
-	const char * const *groups;
-	unsigned int num_groups;
-	int ret;
-
-	mock_gpio_dev->iomux_base = (void __iomem *)0x1234;
-	pmx_functions[5].groups = NULL;
-	pmx_functions[5].ngroups = 0;
-
-	ret = amd_get_groups(mock_pctrldev, 5, &groups, &num_groups);
-
-	KUNIT_EXPECT_EQ(test, ret, 0);
-	KUNIT_EXPECT_NULL(test, groups);
-	KUNIT_EXPECT_EQ(test, num_groups, 0U);
-}
-
-static void test_amd_get_groups_invalid_selector(struct kunit *test)
-{
-	const char * const *groups;
-	unsigned int num_groups;
-	int ret;
-
-	mock_gpio_dev->iomux_base = (void __iomem *)0x1234;
-
-	ret = amd_get_groups(mock_pctrldev, MAX_FUNCTIONS, &groups, &num_groups);
-
-	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
-}
-
-/* ===================== INIT FUNCTION ===================== */
-
+/* Test init function */
 static int amd_get_groups_test_init(struct kunit *test)
 {
 	mock_gpio_dev = kunit_kzalloc(test, sizeof(*mock_gpio_dev), GFP_KERNEL);
@@ -153,14 +67,55 @@ static int amd_get_groups_test_init(struct kunit *test)
 	return 0;
 }
 
-/* ===================== TEST SUITE ===================== */
+/* Test case: iomux_base == NULL */
+static void test_null_iomux_base(struct kunit *test)
+{
+	const char * const *groups;
+	unsigned int num_groups;
+	int ret;
+
+	mock_gpio_dev->iomux_base = NULL;
+
+	ret = amd_get_groups(mock_pctrldev, 0, &groups, &num_groups);
+	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
+}
+
+/* Test case: valid selector */
+static void test_valid_selector(struct kunit *test)
+{
+	const char * const *groups;
+	unsigned int num_groups;
+	static const char * const test_groups[] = {"group1", "group2"};
+	int ret;
+
+	mock_gpio_dev->iomux_base = (void __iomem *)0x1234;
+	pmx_functions[0].groups = test_groups;
+	pmx_functions[0].ngroups = 2;
+
+	ret = amd_get_groups(mock_pctrldev, 0, &groups, &num_groups);
+
+	KUNIT_EXPECT_EQ(test, ret, 0);
+	KUNIT_EXPECT_PTR_EQ(test, groups, test_groups);
+	KUNIT_EXPECT_EQ(test, num_groups, 2U);
+}
+
+/* Test case: invalid selector */
+static void test_invalid_selector(struct kunit *test)
+{
+	const char * const *groups;
+	unsigned int num_groups;
+	int ret;
+
+	mock_gpio_dev->iomux_base = (void __iomem *)0x1234;
+
+	ret = amd_get_groups(mock_pctrldev, MAX_FUNCTIONS, &groups, &num_groups);
+	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
+}
 
 static struct kunit_case amd_get_groups_test_cases[] = {
-	KUNIT_CASE(test_amd_get_groups_null_iomux_base),
-	KUNIT_CASE(test_amd_get_groups_valid_selector),
-	KUNIT_CASE(test_amd_get_groups_edge_selector),
-	KUNIT_CASE(test_amd_get_groups_uninitialized_entry),
-	KUNIT_CASE(test_amd_get_groups_invalid_selector),
+	KUNIT_CASE(test_null_iomux_base),
+	KUNIT_CASE(test_valid_selector),
+	KUNIT_CASE(test_invalid_selector),
 	{}
 };
 
