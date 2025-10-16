@@ -1,113 +1,413 @@
 ERROR:root:../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘amd_get_groups’:
-../drivers/pinctrl/amd_get_groups_kunit_test.c:15:22: error: invalid use of undefined type ‘struct amd_gpio’
-   15 |         if (!gpio_dev->iomux_base) {
+../drivers/pinctrl/amd_get_groups_kunit_test.c:14:22: error: invalid use of undefined type ‘struct amd_gpio’
+   14 |         if (!gpio_dev->iomux_base) {
       |                      ^~
 In file included from ../include/linux/device.h:15,
                  from ../include/linux/platform_device.h:13,
-                 from ../drivers/pinctrl/amd_get_groups_kunit_test.c:3:
-../drivers/pinctrl/amd_get_groups_kunit_test.c:16:34: error: invalid use of undefined type ‘struct amd_gpio’
-   16 |                 dev_err(&gpio_dev->pdev->dev, "iomux function %d group not supported\n", selector);
+                 from ../drivers/pinctrl/amd_get_groups_kunit_test.c:5:
+../drivers/pinctrl/amd_get_groups_kunit_test.c:15:34: error: invalid use of undefined type ‘struct amd_gpio’
+   15 |                 dev_err(&gpio_dev->pdev->dev, "iomux function %d group not supported\n", selector);
       |                                  ^~
 ../include/linux/dev_printk.h:110:25: note: in definition of macro ‘dev_printk_index_wrap’
   110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
       |                         ^~~
-../drivers/pinctrl/amd_get_groups_kunit_test.c:16:17: note: in expansion of macro ‘dev_err’
-   16 |                 dev_err(&gpio_dev->pdev->dev, "iomux function %d group not supported\n", selector);
+../drivers/pinctrl/amd_get_groups_kunit_test.c:15:17: note: in expansion of macro ‘dev_err’
+   15 |                 dev_err(&gpio_dev->pdev->dev, "iomux function %d group not supported\n", selector);
       |                 ^~~~~~~
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_debounce’:
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:90:28: error: storage size of ‘dummy_pctldev’ isn’t known
-   90 |         struct pinctrl_dev dummy_pctldev;
-      |                            ^~~~~~~~~~~~~
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:90:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_pull_down’:
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:106:28: error: storage size of ‘dummy_pctldev’ isn’t known
-  106 |         struct pinctrl_dev dummy_pctldev;
-      |                            ^~~~~~~~~~~~~
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:106:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_pull_up’:
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:124:28: error: storage size of ‘dummy_pctldev’ isn’t known
-  124 |         struct pinctrl_dev dummy_pctldev;
-      |                            ^~~~~~~~~~~~~
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:124:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_drive_strength’:
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:142:28: error: storage size of ‘dummy_pctldev’ isn’t known
-  142 |         struct pinctrl_dev dummy_pctldev;
-      |                            ^~~~~~~~~~~~~
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:142:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_invalid_param’:
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:160:28: error: storage size of ‘dummy_pctldev’ isn’t known
-  160 |         struct pinctrl_dev dummy_pctldev;
-      |                            ^~~~~~~~~~~~~
-../drivers/pinctrl/amd_get_groups_kunit_test.c:20:19: error: ‘pmx_functions’ undeclared (first use in this function); did you mean ‘pinfunction’?
-   20 |         *groups = pmx_functions[selector].groups;
+../drivers/pinctrl/amd_get_groups_kunit_test.c:19:19: error: ‘pmx_functions’ undeclared (first use in this function); did you mean ‘pinfunction’?
+   19 |         *groups = pmx_functions[selector].groups;
       |                   ^~~~~~~~~~~~~
       |                   pinfunction
-../drivers/pinctrl/amd_get_groups_kunit_test.c:20:19: note: each undeclared identifier is reported only once for each function it appears in
+../drivers/pinctrl/amd_get_groups_kunit_test.c:19:19: note: each undeclared identifier is reported only once for each function it appears in
+../drivers/pinctrl/amd_get_groups_kunit_test.c: At top level:
+../drivers/pinctrl/amd_get_groups_kunit_test.c:39:7: warning: no previous prototype for ‘set_mock_pinctrl_dev_get_drvdata’ [-Wmissing-prototypes]
+   39 | void *set_mock_pinctrl_dev_get_drvdata(struct pinctrl_dev *pctldev)
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘set_mock_pinctrl_dev_get_drvdata’:
-../drivers/pinctrl/amd_get_groups_kunit_test.c:43:58: error: invalid use of undefined type ‘struct pinctrl_dev’
-   43 |         struct amd_gpio *gpio_dev = kunit_kzalloc(pctldev->kunit_test, sizeof(*gpio_dev), GFP_KERNEL);
-      |                                                          ^~
-../drivers/pinctrl/amd_get_groups_kunit_test.c:44:47: error: invalid use of undefined type ‘struct pinctrl_dev’
-   44 |         gpio_dev->pdev = kunit_kzalloc(pctldev->kunit_test, sizeof(*gpio_dev->pdev), GFP_KERNEL);
-      |                                               ^~
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:160:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
-../drivers/pinctrl/amd_get_groups_kunit_test.c:45:16: error: returning ‘struct amd_gpio *’ from a function with incompatible return type ‘struct pinctrl_dev *’ [-Werror=incompatible-pointer-types]
-   45 |         return gpio_dev;
-      |                ^~~~~~~~
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_no_configs’:
+../drivers/pinctrl/amd_get_groups_kunit_test.c:41:23: error: invalid use of undefined type ‘struct pinctrl_dev’
+   41 |         return pctldev->driver_data;
+      |                       ^~
 ../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘test_amd_get_groups_iomux_base_null’:
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:175:28: error: storage size of ‘dummy_pctldev’ isn’t known
-  175 |         struct pinctrl_dev dummy_pctldev;
-      |                            ^~~~~~~~~~~~~
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:175:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_invalid_pin’:
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:186:28: error: storage size of ‘dummy_pctldev’ isn’t known
-  186 |         struct pinctrl_dev dummy_pctldev;
-      |                            ^~~~~~~~~~~~~
-../drivers/pinctrl/amd_get_groups_kunit_test.c:52:65: error: invalid application of ‘sizeof’ to incomplete type ‘struct pinctrl_dev’
-   52 |         struct pinctrl_dev *pctldev = kunit_kzalloc(test, sizeof(*pctldev), GFP_KERNEL);
-      |                                                                 ^
-../drivers/pinctrl/amd_pinconf_set_kunit_test.c:186:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
-../drivers/pinctrl/amd_get_groups_kunit_test.c:48:33: error: initialization of ‘struct amd_gpio *’ from incompatible pointer type ‘struct pinctrl_dev *’ [-Werror=incompatible-pointer-types]
-   48 | #define pinctrl_dev_get_drvdata set_mock_pinctrl_dev_get_drvdata
-      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../drivers/pinctrl/amd_get_groups_kunit_test.c:53:37: note: in expansion of macro ‘pinctrl_dev_get_drvdata’
-   53 |         struct amd_gpio *gpio_dev = pinctrl_dev_get_drvdata(pctldev);
-      |                                     ^~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_get_groups_kunit_test.c:48:28: error: storage size of ‘pctldev’ isn’t known
+   48 |         struct pinctrl_dev pctldev;
+      |                            ^~~~~~~
+../drivers/pinctrl/amd_get_groups_kunit_test.c:48:28: warning: unused variable ‘pctldev’ [-Wunused-variable]
+../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘test_amd_get_groups_selector_out_of_bounds’:
+../drivers/pinctrl/amd_get_groups_kunit_test.c:60:28: error: storage size of ‘pctldev’ isn’t known
+   60 |         struct pinctrl_dev pctldev;
+      |                            ^~~~~~~
+../drivers/pinctrl/amd_get_groups_kunit_test.c:60:28: warning: unused variable ‘pctldev’ [-Wunused-variable]
 ../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘test_amd_get_groups_valid_selector’:
-../drivers/pinctrl/amd_get_groups_kunit_test.c:64:65: error: invalid application of ‘sizeof’ to incomplete type ‘struct pinctrl_dev’
-   64 |         struct pinctrl_dev *pctldev = kunit_kzalloc(test, sizeof(*pctldev), GFP_KERNEL);
-      |                                                                 ^
-../drivers/pinctrl/amd_get_groups_kunit_test.c:48:33: error: initialization of ‘struct amd_gpio *’ from incompatible pointer type ‘struct pinctrl_dev *’ [-Werror=incompatible-pointer-types]
-   48 | #define pinctrl_dev_get_drvdata set_mock_pinctrl_dev_get_drvdata
-      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../drivers/pinctrl/amd_get_groups_kunit_test.c:65:37: note: in expansion of macro ‘pinctrl_dev_get_drvdata’
-   65 |         struct amd_gpio *gpio_dev = pinctrl_dev_get_drvdata(pctldev);
-      |                                     ^~~~~~~~~~~~~~~~~~~~~~~
-../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘test_amd_get_groups_invalid_selector’:
-../drivers/pinctrl/amd_get_groups_kunit_test.c:78:65: error: invalid application of ‘sizeof’ to incomplete type ‘struct pinctrl_dev’
-   78 |         struct pinctrl_dev *pctldev = kunit_kzalloc(test, sizeof(*pctldev), GFP_KERNEL);
-      |                                                                 ^
-../drivers/pinctrl/amd_get_groups_kunit_test.c:48:33: error: initialization of ‘struct amd_gpio *’ from incompatible pointer type ‘struct pinctrl_dev *’ [-Werror=incompatible-pointer-types]
-   48 | #define pinctrl_dev_get_drvdata set_mock_pinctrl_dev_get_drvdata
-      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../drivers/pinctrl/amd_get_groups_kunit_test.c:79:37: note: in expansion of macro ‘pinctrl_dev_get_drvdata’
-   79 |         struct amd_gpio *gpio_dev = pinctrl_dev_get_drvdata(pctldev);
-      |                                     ^~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_get_groups_kunit_test.c:72:28: error: storage size of ‘pctldev’ isn’t known
+   72 |         struct pinctrl_dev pctldev;
+      |                            ^~~~~~~
+../drivers/pinctrl/amd_get_groups_kunit_test.c:72:28: warning: unused variable ‘pctldev’ [-Wunused-variable]
+../drivers/pinctrl/amd_get_groups_kunit_test.c: In function ‘set_mock_pinctrl_dev_get_drvdata’:
+../drivers/pinctrl/amd_get_groups_kunit_test.c:42:1: error: control reaches end of non-void function [-Werror=return-type]
+   42 | }
+      | ^
 cc1: some warnings being treated as errors
 make[5]: *** [../scripts/Makefile.build:287: drivers/pinctrl/amd_get_groups_kunit_test.o] Error 1
 make[5]: *** Waiting for unfinished jobs....
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:10:41: warning: ‘struct amd_gpio’ declared inside parameter list will not be visible outside of this definition or declaration
+   10 | static int amd_gpio_set_debounce(struct amd_gpio *gpio_dev, unsigned int pin, u32 arg)
+      |                                         ^~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘amd_pinconf_set’:
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:24:31: error: storage size of ‘param’ isn’t known
+   24 |         enum pin_config_param param;
+      |                               ^~~~~
+In file included from ../include/linux/spinlock.h:314,
+                 from ../include/linux/kref.h:16,
+                 from ../include/kunit/test.h:22,
+                 from ../drivers/pinctrl/amd_pinconf_set_kunit_test.c:1:
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:27:40: error: invalid use of undefined type ‘struct amd_gpio’
+   27 |         raw_spin_lock_irqsave(&gpio_dev->lock, flags);
+      |                                        ^~
+../include/linux/spinlock_api_up.h:28:32: note: in definition of macro ‘___LOCK’
+   28 |   do { __acquire(lock); (void)(lock); } while (0)
+      |                                ^~~~
+../include/linux/spinlock_api_up.h:40:31: note: in expansion of macro ‘__LOCK’
+   40 |   do { local_irq_save(flags); __LOCK(lock); } while (0)
+      |                               ^~~~~~
+../include/linux/spinlock_api_up.h:69:49: note: in expansion of macro ‘__LOCK_IRQSAVE’
+   69 | #define _raw_spin_lock_irqsave(lock, flags)     __LOCK_IRQSAVE(lock, flags)
+      |                                                 ^~~~~~~~~~~~~~
+../include/linux/spinlock.h:266:17: note: in expansion of macro ‘_raw_spin_lock_irqsave’
+  266 |                 _raw_spin_lock_irqsave(lock, flags);    \
+      |                 ^~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:27:9: note: in expansion of macro ‘raw_spin_lock_irqsave’
+   27 |         raw_spin_lock_irqsave(&gpio_dev->lock, flags);
+      |         ^~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:29:25: error: implicit declaration of function ‘pinconf_to_config_param’ [-Werror=implicit-function-declaration]
+   29 |                 param = pinconf_to_config_param(configs[i]);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:30:23: error: implicit declaration of function ‘pinconf_to_config_argument’ [-Werror=implicit-function-declaration]
+   30 |                 arg = pinconf_to_config_argument(configs[i]);
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:31:41: error: invalid use of undefined type ‘struct amd_gpio’
+   31 |                 pin_reg = readl(gpio_dev->base + pin*4);
+      |                                         ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:34:22: error: ‘PIN_CONFIG_INPUT_DEBOUNCE’ undeclared (first use in this function); did you mean ‘CONFIG_INPUT_MOUSE’?
+   34 |                 case PIN_CONFIG_INPUT_DEBOUNCE:
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~
+      |                      CONFIG_INPUT_MOUSE
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:34:22: note: each undeclared identifier is reported only once for each function it appears in
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:35:53: error: passing argument 1 of ‘amd_gpio_set_debounce’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+   35 |                         ret = amd_gpio_set_debounce(gpio_dev, pin, arg);
+      |                                                     ^~~~~~~~
+      |                                                     |
+      |                                                     struct amd_gpio *
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:10:51: note: expected ‘struct amd_gpio *’ but argument is of type ‘struct amd_gpio *’
+   10 | static int amd_gpio_set_debounce(struct amd_gpio *gpio_dev, unsigned int pin, u32 arg)
+      |                                  ~~~~~~~~~~~~~~~~~^~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:38:22: error: ‘PIN_CONFIG_BIAS_PULL_DOWN’ undeclared (first use in this function)
+   38 |                 case PIN_CONFIG_BIAS_PULL_DOWN:
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from ../include/linux/bits.h:6,
+                 from ../include/linux/ratelimit_types.h:5,
+                 from ../include/linux/printk.h:9,
+                 from ../include/kunit/assert.h:13,
+                 from ../include/kunit/test.h:12:
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:39:41: error: ‘PULL_DOWN_ENABLE_OFF’ undeclared (first use in this function)
+   39 |                         pin_reg &= ~BIT(PULL_DOWN_ENABLE_OFF);
+      |                                         ^~~~~~~~~~~~~~~~~~~~
+../include/vdso/bits.h:7:44: note: in definition of macro ‘BIT’
+    7 | #define BIT(nr)                 (UL(1) << (nr))
+      |                                            ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:43:22: error: ‘PIN_CONFIG_BIAS_PULL_UP’ undeclared (first use in this function)
+   43 |                 case PIN_CONFIG_BIAS_PULL_UP:
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:44:41: error: ‘PULL_UP_ENABLE_OFF’ undeclared (first use in this function)
+   44 |                         pin_reg &= ~BIT(PULL_UP_ENABLE_OFF);
+      |                                         ^~~~~~~~~~~~~~~~~~
+../include/vdso/bits.h:7:44: note: in definition of macro ‘BIT’
+    7 | #define BIT(nr)                 (UL(1) << (nr))
+      |                                            ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:48:22: error: ‘PIN_CONFIG_DRIVE_STRENGTH’ undeclared (first use in this function)
+   48 |                 case PIN_CONFIG_DRIVE_STRENGTH:
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:49:38: error: ‘DRV_STRENGTH_SEL_MASK’ undeclared (first use in this function)
+   49 |                         pin_reg &= ~(DRV_STRENGTH_SEL_MASK
+      |                                      ^~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:50:44: error: ‘DRV_STRENGTH_SEL_OFF’ undeclared (first use in this function)
+   50 |                                         << DRV_STRENGTH_SEL_OFF);
+      |                                            ^~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:56:25: error: implicit declaration of function ‘dev_dbg’ [-Werror=implicit-function-declaration]
+   56 |                         dev_dbg(&gpio_dev->pdev->dev,
+      |                         ^~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:56:42: error: invalid use of undefined type ‘struct amd_gpio’
+   56 |                         dev_dbg(&gpio_dev->pdev->dev,
+      |                                          ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:61:41: error: invalid use of undefined type ‘struct amd_gpio’
+   61 |                 writel(pin_reg, gpio_dev->base + pin*4);
+      |                                         ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:64:45: error: invalid use of undefined type ‘struct amd_gpio’
+   64 |         raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
+      |                                             ^~
+../include/linux/spinlock_api_up.h:43:32: note: in definition of macro ‘___UNLOCK’
+   43 |   do { __release(lock); (void)(lock); } while (0)
+      |                                ^~~~
+../include/linux/spinlock_api_up.h:56:34: note: in expansion of macro ‘__UNLOCK’
+   56 |   do { local_irq_restore(flags); __UNLOCK(lock); } while (0)
+      |                                  ^~~~~~~~
+../include/linux/spinlock_api_up.h:86:41: note: in expansion of macro ‘__UNLOCK_IRQRESTORE’
+   86 |                                         __UNLOCK_IRQRESTORE(lock, flags)
+      |                                         ^~~~~~~~~~~~~~~~~~~
+../include/linux/spinlock.h:282:17: note: in expansion of macro ‘_raw_spin_unlock_irqrestore’
+  282 |                 _raw_spin_unlock_irqrestore(lock, flags);       \
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:64:9: note: in expansion of macro ‘raw_spin_unlock_irqrestore’
+   64 |         raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:24:31: warning: unused variable ‘param’ [-Wunused-variable]
+   24 |         enum pin_config_param param;
+      |                               ^~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘set_mock_pinctrl_dev_get_drvdata’:
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:71:23: error: invalid use of undefined type ‘struct pinctrl_dev’
+   71 |         return pctldev->kunit_test->priv;
+      |                       ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_debounce’:
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:78:28: error: storage size of ‘dummy_pctldev’ isn’t known
+   78 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:80:17: error: implicit declaration of function ‘pinconf_to_config_packed’ [-Werror=implicit-function-declaration]
+   80 |                 pinconf_to_config_packed(PIN_CONFIG_INPUT_DEBOUNCE, 0x5)
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:80:42: error: ‘PIN_CONFIG_INPUT_DEBOUNCE’ undeclared (first use in this function); did you mean ‘CONFIG_INPUT_MOUSE’?
+   80 |                 pinconf_to_config_packed(PIN_CONFIG_INPUT_DEBOUNCE, 0x5)
+      |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                          CONFIG_INPUT_MOUSE
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:84:49: error: invalid application of ‘sizeof’ to incomplete type ‘struct amd_gpio’
+   84 |         test->priv = kunit_kzalloc(test, sizeof(struct amd_gpio), GFP_KERNEL);
+      |                                                 ^~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:85:40: error: invalid use of undefined type ‘struct amd_gpio’
+   85 |         ((struct amd_gpio *)test->priv)->base = kunit_kzalloc(test, 4096, GFP_KERNEL);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:86:40: error: invalid use of undefined type ‘struct amd_gpio’
+   86 |         ((struct amd_gpio *)test->priv)->lock = __RAW_SPIN_LOCK_UNLOCKED(((struct amd_gpio *)test->priv)->lock);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:88:52: error: invalid use of undefined type ‘struct amd_gpio’
+   88 |         writel(0x0, ((struct amd_gpio *)test->priv)->base + 0 * 4);
+      |                                                    ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:78:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
+   78 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_pull_down’:
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:96:28: error: storage size of ‘dummy_pctldev’ isn’t known
+   96 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:98:42: error: ‘PIN_CONFIG_BIAS_PULL_DOWN’ undeclared (first use in this function)
+   98 |                 pinconf_to_config_packed(PIN_CONFIG_BIAS_PULL_DOWN, 1)
+      |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:102:49: error: invalid application of ‘sizeof’ to incomplete type ‘struct amd_gpio’
+  102 |         test->priv = kunit_kzalloc(test, sizeof(struct amd_gpio), GFP_KERNEL);
+      |                                                 ^~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:103:40: error: invalid use of undefined type ‘struct amd_gpio’
+  103 |         ((struct amd_gpio *)test->priv)->base = kunit_kzalloc(test, 4096, GFP_KERNEL);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:104:40: error: invalid use of undefined type ‘struct amd_gpio’
+  104 |         ((struct amd_gpio *)test->priv)->lock = __RAW_SPIN_LOCK_UNLOCKED(((struct amd_gpio *)test->priv)->lock);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:106:59: error: invalid use of undefined type ‘struct amd_gpio’
+  106 |         writel(0xFFFFFFFF, ((struct amd_gpio *)test->priv)->base + 0 * 4);
+      |                                                           ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:111:56: error: invalid use of undefined type ‘struct amd_gpio’
+  111 |         u32 val = readl(((struct amd_gpio *)test->priv)->base + 0 * 4);
+      |                                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:112:41: error: ‘PULL_DOWN_ENABLE_OFF’ undeclared (first use in this function)
+  112 |         KUNIT_EXPECT_EQ(test, val & BIT(PULL_DOWN_ENABLE_OFF), BIT(PULL_DOWN_ENABLE_OFF));
+      |                                         ^~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:112:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+  112 |         KUNIT_EXPECT_EQ(test, val & BIT(PULL_DOWN_ENABLE_OFF), BIT(PULL_DOWN_ENABLE_OFF));
+      |         ^~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:112:37: note: in expansion of macro ‘BIT’
+  112 |         KUNIT_EXPECT_EQ(test, val & BIT(PULL_DOWN_ENABLE_OFF), BIT(PULL_DOWN_ENABLE_OFF));
+      |                                     ^~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:96:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
+   96 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_pull_up’:
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:117:28: error: storage size of ‘dummy_pctldev’ isn’t known
+  117 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:119:42: error: ‘PIN_CONFIG_BIAS_PULL_UP’ undeclared (first use in this function)
+  119 |                 pinconf_to_config_packed(PIN_CONFIG_BIAS_PULL_UP, 1)
+      |                                          ^~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:123:49: error: invalid application of ‘sizeof’ to incomplete type ‘struct amd_gpio’
+  123 |         test->priv = kunit_kzalloc(test, sizeof(struct amd_gpio), GFP_KERNEL);
+      |                                                 ^~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:124:40: error: invalid use of undefined type ‘struct amd_gpio’
+  124 |         ((struct amd_gpio *)test->priv)->base = kunit_kzalloc(test, 4096, GFP_KERNEL);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:125:40: error: invalid use of undefined type ‘struct amd_gpio’
+  125 |         ((struct amd_gpio *)test->priv)->lock = __RAW_SPIN_LOCK_UNLOCKED(((struct amd_gpio *)test->priv)->lock);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:127:59: error: invalid use of undefined type ‘struct amd_gpio’
+  127 |         writel(0xFFFFFFFF, ((struct amd_gpio *)test->priv)->base + 0 * 4);
+      |                                                           ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:132:56: error: invalid use of undefined type ‘struct amd_gpio’
+  132 |         u32 val = readl(((struct amd_gpio *)test->priv)->base + 0 * 4);
+      |                                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:133:41: error: ‘PULL_UP_ENABLE_OFF’ undeclared (first use in this function)
+  133 |         KUNIT_EXPECT_EQ(test, val & BIT(PULL_UP_ENABLE_OFF), BIT(PULL_UP_ENABLE_OFF));
+      |                                         ^~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:133:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+  133 |         KUNIT_EXPECT_EQ(test, val & BIT(PULL_UP_ENABLE_OFF), BIT(PULL_UP_ENABLE_OFF));
+      |         ^~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:133:37: note: in expansion of macro ‘BIT’
+  133 |         KUNIT_EXPECT_EQ(test, val & BIT(PULL_UP_ENABLE_OFF), BIT(PULL_UP_ENABLE_OFF));
+      |                                     ^~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:117:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
+  117 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_drive_strength’:
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:138:28: error: storage size of ‘dummy_pctldev’ isn’t known
+  138 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:140:42: error: ‘PIN_CONFIG_DRIVE_STRENGTH’ undeclared (first use in this function)
+  140 |                 pinconf_to_config_packed(PIN_CONFIG_DRIVE_STRENGTH, 0x3)
+      |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:144:49: error: invalid application of ‘sizeof’ to incomplete type ‘struct amd_gpio’
+  144 |         test->priv = kunit_kzalloc(test, sizeof(struct amd_gpio), GFP_KERNEL);
+      |                                                 ^~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:145:40: error: invalid use of undefined type ‘struct amd_gpio’
+  145 |         ((struct amd_gpio *)test->priv)->base = kunit_kzalloc(test, 4096, GFP_KERNEL);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:146:40: error: invalid use of undefined type ‘struct amd_gpio’
+  146 |         ((struct amd_gpio *)test->priv)->lock = __RAW_SPIN_LOCK_UNLOCKED(((struct amd_gpio *)test->priv)->lock);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:148:52: error: invalid use of undefined type ‘struct amd_gpio’
+  148 |         writel(0x0, ((struct amd_gpio *)test->priv)->base + 0 * 4);
+      |                                                    ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:153:56: error: invalid use of undefined type ‘struct amd_gpio’
+  153 |         u32 val = readl(((struct amd_gpio *)test->priv)->base + 0 * 4);
+      |                                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:154:39: error: ‘DRV_STRENGTH_SEL_OFF’ undeclared (first use in this function)
+  154 |         KUNIT_EXPECT_EQ(test, (val >> DRV_STRENGTH_SEL_OFF) & DRV_STRENGTH_SEL_MASK, 0x3);
+      |                                       ^~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:154:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+  154 |         KUNIT_EXPECT_EQ(test, (val >> DRV_STRENGTH_SEL_OFF) & DRV_STRENGTH_SEL_MASK, 0x3);
+      |         ^~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:154:63: error: ‘DRV_STRENGTH_SEL_MASK’ undeclared (first use in this function)
+  154 |         KUNIT_EXPECT_EQ(test, (val >> DRV_STRENGTH_SEL_OFF) & DRV_STRENGTH_SEL_MASK, 0x3);
+      |                                                               ^~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:154:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+  154 |         KUNIT_EXPECT_EQ(test, (val >> DRV_STRENGTH_SEL_OFF) & DRV_STRENGTH_SEL_MASK, 0x3);
+      |         ^~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:138:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
+  138 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_invalid_param’:
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:159:28: error: storage size of ‘dummy_pctldev’ isn’t known
+  159 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:161:48: error: conversion to incomplete type
+  161 |                 pinconf_to_config_packed((enum pin_config_param)0xFFFF, 0)
+      |                                                ^~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:165:49: error: invalid application of ‘sizeof’ to incomplete type ‘struct amd_gpio’
+  165 |         test->priv = kunit_kzalloc(test, sizeof(struct amd_gpio), GFP_KERNEL);
+      |                                                 ^~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:166:40: error: invalid use of undefined type ‘struct amd_gpio’
+  166 |         ((struct amd_gpio *)test->priv)->base = kunit_kzalloc(test, 4096, GFP_KERNEL);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:167:40: error: invalid use of undefined type ‘struct amd_gpio’
+  167 |         ((struct amd_gpio *)test->priv)->lock = __RAW_SPIN_LOCK_UNLOCKED(((struct amd_gpio *)test->priv)->lock);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:168:40: error: invalid use of undefined type ‘struct amd_gpio’
+  168 |         ((struct amd_gpio *)test->priv)->pdev = NULL;
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:159:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
+  159 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_no_configs’:
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:176:28: error: storage size of ‘dummy_pctldev’ isn’t known
+  176 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:179:49: error: invalid application of ‘sizeof’ to incomplete type ‘struct amd_gpio’
+  179 |         test->priv = kunit_kzalloc(test, sizeof(struct amd_gpio), GFP_KERNEL);
+      |                                                 ^~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:180:40: error: invalid use of undefined type ‘struct amd_gpio’
+  180 |         ((struct amd_gpio *)test->priv)->base = kunit_kzalloc(test, 4096, GFP_KERNEL);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:181:40: error: invalid use of undefined type ‘struct amd_gpio’
+  181 |         ((struct amd_gpio *)test->priv)->lock = __RAW_SPIN_LOCK_UNLOCKED(((struct amd_gpio *)test->priv)->lock);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:176:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
+  176 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c: In function ‘test_amd_pinconf_set_invalid_pin’:
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:189:28: error: storage size of ‘dummy_pctldev’ isn’t known
+  189 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:191:42: error: ‘PIN_CONFIG_BIAS_PULL_DOWN’ undeclared (first use in this function)
+  191 |                 pinconf_to_config_packed(PIN_CONFIG_BIAS_PULL_DOWN, 1)
+      |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:195:49: error: invalid application of ‘sizeof’ to incomplete type ‘struct amd_gpio’
+  195 |         test->priv = kunit_kzalloc(test, sizeof(struct amd_gpio), GFP_KERNEL);
+      |                                                 ^~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:196:40: error: invalid use of undefined type ‘struct amd_gpio’
+  196 |         ((struct amd_gpio *)test->priv)->base = kunit_kzalloc(test, 4096, GFP_KERNEL);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:197:40: error: invalid use of undefined type ‘struct amd_gpio’
+  197 |         ((struct amd_gpio *)test->priv)->lock = __RAW_SPIN_LOCK_UNLOCKED(((struct amd_gpio *)test->priv)->lock);
+      |                                        ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:199:59: error: invalid use of undefined type ‘struct amd_gpio’
+  199 |         writel(0xFFFFFFFF, ((struct amd_gpio *)test->priv)->base + 0 * 4);
+      |                                                           ^~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:189:28: warning: unused variable ‘dummy_pctldev’ [-Wunused-variable]
+  189 |         struct pinctrl_dev dummy_pctldev;
+      |                            ^~~~~~~~~~~~~
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c: At top level:
+../drivers/pinctrl/amd_pinconf_set_kunit_test.c:69:14: warning: ‘set_mock_pinctrl_dev_get_drvdata’ defined but not used [-Wunused-function]
+   69 | static void *set_mock_pinctrl_dev_get_drvdata(struct pinctrl_dev *pctldev)
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cc1: some warnings being treated as errors
 make[5]: *** [../scripts/Makefile.build:287: drivers/pinctrl/amd_pinconf_set_kunit_test.o] Error 1
 make[4]: *** [../scripts/Makefile.build:554: drivers/pinctrl] Error 2
-make[4]: *** Waiting for unfinished jobs....
 make[3]: *** [../scripts/Makefile.build:554: drivers] Error 2
 make[3]: *** Waiting for unfinished jobs....
 make[2]: *** [/home/amd/linux/Makefile:2003: .] Error 2
 make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Error 2
 make: *** [Makefile:248: __sub-make] Error 2
 
-[20:09:43] Configuring KUnit Kernel ...
-[20:09:43] Building KUnit Kernel ...
+[20:19:26] Configuring KUnit Kernel ...
+[20:19:26] Building KUnit Kernel ...
 Populating config with:
 $ make ARCH=x86_64 O=.kunit olddefconfig
 Building with:
