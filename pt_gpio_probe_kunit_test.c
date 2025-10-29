@@ -4,6 +4,19 @@
 #include <linux/io.h>
 #include <linux/gpio/driver.h>
 
+#include "gpio-amdpt.h" /* <-- ADD THIS */
+
+/*
+ * Include the .c file directly to gain access to its static functions
+ * and struct definitions.
+ */
+#include "gpio-amdpt.c" /* <-- ADD THIS */
+
+
+/* * NOW, REMOVE the forward declaration below, 
+ * since it's provided by "gpio-amdpt.c"
+ */
+/* static int pt_gpio_probe(struct platform_device *pdev); */
 /* Mock definitions for registers used in pt_gpio_probe */
 #define PT_INPUTDATA_REG   0x00
 #define PT_OUTPUTDATA_REG  0x04
