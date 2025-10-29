@@ -1,74 +1,501 @@
-  
-ERROR:root:../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘pt_gpio_request’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:18:9: error: implicit declaration of function ‘dev_dbg’ [-Werror=implicit-function-declaration]
-   18 |         dev_dbg(gc->parent, "pt_gpio_request offset=%x\n", offset);
-      |         ^~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c:24:17: error: implicit declaration of function ‘dev_warn’ [-Werror=implicit-function-declaration]
-   24 |                 dev_warn(gc->parent, "PT GPIO pin %x reconfigured\n",
-      |                 ^~~~~~~~
+ERROR:root:../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘create_mock_gpio_chip’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:30:11: error: ‘struct gpio_chip’ has no member named ‘private’
+   30 |         gc->private = pt_gpio;
+      |           ^~
 ../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_success’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:50:11: error: ‘struct gpio_chip’ has no member named ‘private’
-   50 |         gc.private = &pt_gpio;
-      |           ^
-../drivers/gpio/pt_gpio_request_kunit_test.c:44:23: warning: unused variable ‘flags’ [-Wunused-variable]
-   44 |         unsigned long flags;
-      |                       ^~~~~
+../drivers/gpio/pt_gpio_request_kunit_test.c:41:42: error: ‘struct gpio_chip’ has no member named ‘private’
+   41 |         struct pt_gpio_chip *pt_gpio = gc->private;
+      |                                          ^~
 ../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_pin_already_used’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:70:11: error: ‘struct gpio_chip’ has no member named ‘private’
-   70 |         gc.private = &pt_gpio;
-      |           ^
+../drivers/gpio/pt_gpio_request_kunit_test.c:57:42: error: ‘struct gpio_chip’ has no member named ‘private’
+   57 |         struct pt_gpio_chip *pt_gpio = gc->private;
+      |                                          ^~
 ../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_multiple_pins’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:91:11: error: ‘struct gpio_chip’ has no member named ‘private’
-   91 |         gc.private = &pt_gpio;
-      |           ^
-../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_same_pin_twice’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:117:11: error: ‘struct gpio_chip’ has no member named ‘private’
-  117 |         gc.private = &pt_gpio;
-      |           ^
-cc1: some warnings being treated as errors
+../drivers/gpio/pt_gpio_request_kunit_test.c:73:42: error: ‘struct gpio_chip’ has no member named ‘private’
+   73 |         struct pt_gpio_chip *pt_gpio = gc->private;
+      |                                          ^~
+../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_boundary_values’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:98:42: error: ‘struct gpio_chip’ has no member named ‘private’
+   98 |         struct pt_gpio_chip *pt_gpio = gc->private;
+      |                                          ^~
 make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/pt_gpio_request_kunit_test.o] Error 1
 make[5]: *** Waiting for unfinished jobs....
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘pt_gpio_free’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:26:9: error: implicit declaration of function ‘dev_dbg’ [-Werror=implicit-function-declaration]
-   26 |         dev_dbg(gc->parent, "pt_gpio_free offset=%x\n", offset);
-      |         ^~~~~~~
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_basic’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:44:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   44 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:46:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   46 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_first_bit’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:64:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   64 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:66:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   66 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_last_bit’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:84:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   84 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:86:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   86 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_clear_multiple_bits’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:104:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-  104 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:106:16: error: ‘struct gpio_chip’ has no member named ‘private’
-  106 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_noop_on_zero_reg’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:125:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-  125 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:127:16: error: ‘struct gpio_chip’ has no member named ‘private’
-  127 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
+../drivers/gpio/gpio-amdpt_branch.c: In function ‘pt_gpio_probe_test’:
+../drivers/gpio/gpio-amdpt_branch.c:15:12: error: implicit declaration of function ‘kunit_alloc_platform_device’; did you mean ‘is_sh_early_platform_device’? [-Werror=implicit-function-declaration]
+   15 |     pdev = kunit_alloc_platform_device(test);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |            is_sh_early_platform_device
+../drivers/gpio/gpio-amdpt_branch.c:15:10: warning: assignment to ‘struct platform_device *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   15 |     pdev = kunit_alloc_platform_device(test);
+      |          ^
+In file included from ../include/linux/percpu.h:5,
+                 from ../arch/x86/include/asm/msr.h:16,
+                 from ../arch/x86/include/asm/tsc.h:11,
+                 from ../arch/x86/include/asm/timex.h:6,
+                 from ../include/linux/timex.h:67,
+                 from ../include/linux/time32.h:13,
+                 from ../include/linux/time.h:60,
+                 from ../include/linux/stat.h:19,
+                 from ../include/linux/module.h:13,
+                 from ../include/kunit/test.h:24,
+                 from ../drivers/gpio/gpio-amdpt_branch.c:1:
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:239:16: note: in definition of macro ‘alloc_hooks_tag’
+  239 |         typeof(_do_alloc) _res;                                         \
+      |                ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:243:24: note: in definition of macro ‘alloc_hooks_tag’
+  243 |                 _res = _do_alloc;                                       \
+      |                        ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:246:24: note: in definition of macro ‘alloc_hooks_tag’
+  246 |                 _res = _do_alloc;                                       \
+      |                        ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:13: warning: assignment to ‘struct pt_gpio *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |             ^
+../drivers/gpio/gpio-amdpt_branch.c:26:12: error: invalid use of undefined type ‘struct pt_gpio’
+   26 |     pt_gpio->reg_base = fake_reg_base;
+      |            ^~
+../drivers/gpio/gpio-amdpt_branch.c:32:22: error: invalid use of undefined type ‘struct pt_gpio’
+   32 |     writel(0, pt_gpio->reg_base + PT_SYNC_REG);
+      |                      ^~
+../drivers/gpio/gpio-amdpt_branch.c:33:22: error: invalid use of undefined type ‘struct pt_gpio’
+   33 |     writel(0, pt_gpio->reg_base + PT_CLOCKRATE_REG);
+      |                      ^~
+../drivers/gpio/gpio-amdpt_branch.c:36:40: error: invalid use of undefined type ‘struct pt_gpio’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:40: error: invalid use of undefined type ‘struct pt_gpio’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:38: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:40: error: invalid use of undefined type ‘struct pt_gpio’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:40: error: invalid use of undefined type ‘struct pt_gpio’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:38: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
 cc1: some warnings being treated as errors
-make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/pt_gpio_free_kunit_test.o] Error 1
+make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/gpio-amdpt_branch.o] Error 1
+make[4]: *** [../scripts/Makefile.build:554: drivers/gpio] Error 2
+make[4]: *** Waiting for unfinished jobs....
+make[3]: *** [../scripts/Makefile.build:554: drivers] Error 2
+make[3]: *** Waiting for unfinished jobs....
+make[2]: *** [/home/amd/linux/Makefile:2003: .] Error 2
+make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Error 2
+make: *** [Makefile:248: __sub-make] Error 2
+
+[15:16:04] Configuring KUnit Kernel ...
+[15:16:04] Building KUnit Kernel ...
+Populating config with:
+$ make ARCH=x86_64 O=.kunit olddefconfig
+Building with:
+$ make all compile_commands.json scripts_gdb ARCH=x86_64 O=.kunit --jobs=4
+ERROR:root:../drivers/gpio/pt_gpio_request_kunit_test.c:5:2: error: invalid preprocessing directive #inlcude; did you mean #include?
+    5 | #inlcude "gpio-amdpt.c"
+      |  ^~~~~~~
+      |  include
+../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘create_mock_gpio_chip’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:30:11: error: ‘struct gpio_chip’ has no member named ‘private’
+   30 |         gc->private = pt_gpio;
+      |           ^~
+../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_success’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:41:42: error: ‘struct gpio_chip’ has no member named ‘private’
+   41 |         struct pt_gpio_chip *pt_gpio = gc->private;
+      |                                          ^~
+../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_pin_already_used’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:57:42: error: ‘struct gpio_chip’ has no member named ‘private’
+   57 |         struct pt_gpio_chip *pt_gpio = gc->private;
+      |                                          ^~
+../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_multiple_pins’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:73:42: error: ‘struct gpio_chip’ has no member named ‘private’
+   73 |         struct pt_gpio_chip *pt_gpio = gc->private;
+      |                                          ^~
+../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_boundary_values’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:98:42: error: ‘struct gpio_chip’ has no member named ‘private’
+   98 |         struct pt_gpio_chip *pt_gpio = gc->private;
+      |                                          ^~
+make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/pt_gpio_request_kunit_test.o] Error 1
+make[5]: *** Waiting for unfinished jobs....
+../drivers/gpio/gpio-amdpt_branch.c: In function ‘pt_gpio_probe_test’:
+../drivers/gpio/gpio-amdpt_branch.c:15:12: error: implicit declaration of function ‘kunit_alloc_platform_device’; did you mean ‘is_sh_early_platform_device’? [-Werror=implicit-function-declaration]
+   15 |     pdev = kunit_alloc_platform_device(test);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |            is_sh_early_platform_device
+../drivers/gpio/gpio-amdpt_branch.c:15:10: warning: assignment to ‘struct platform_device *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   15 |     pdev = kunit_alloc_platform_device(test);
+      |          ^
+In file included from ../include/linux/percpu.h:5,
+                 from ../arch/x86/include/asm/msr.h:16,
+                 from ../arch/x86/include/asm/tsc.h:11,
+                 from ../arch/x86/include/asm/timex.h:6,
+                 from ../include/linux/timex.h:67,
+                 from ../include/linux/time32.h:13,
+                 from ../include/linux/time.h:60,
+                 from ../include/linux/stat.h:19,
+                 from ../include/linux/module.h:13,
+                 from ../include/kunit/test.h:24,
+                 from ../drivers/gpio/gpio-amdpt_branch.c:1:
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:239:16: note: in definition of macro ‘alloc_hooks_tag’
+  239 |         typeof(_do_alloc) _res;                                         \
+      |                ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:243:24: note: in definition of macro ‘alloc_hooks_tag’
+  243 |                 _res = _do_alloc;                                       \
+      |                        ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:246:24: note: in definition of macro ‘alloc_hooks_tag’
+  246 |                 _res = _do_alloc;                                       \
+      |                        ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:13: warning: assignment to ‘struct pt_gpio *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |             ^
+../drivers/gpio/gpio-amdpt_branch.c:26:12: error: invalid use of undefined type ‘struct pt_gpio’
+   26 |     pt_gpio->reg_base = fake_reg_base;
+      |            ^~
+../drivers/gpio/gpio-amdpt_branch.c:32:22: error: invalid use of undefined type ‘struct pt_gpio’
+   32 |     writel(0, pt_gpio->reg_base + PT_SYNC_REG);
+      |                      ^~
+../drivers/gpio/gpio-amdpt_branch.c:33:22: error: invalid use of undefined type ‘struct pt_gpio’
+   33 |     writel(0, pt_gpio->reg_base + PT_CLOCKRATE_REG);
+      |                      ^~
+../drivers/gpio/gpio-amdpt_branch.c:36:40: error: invalid use of undefined type ‘struct pt_gpio’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:40: error: invalid use of undefined type ‘struct pt_gpio’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:38: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:40: error: invalid use of undefined type ‘struct pt_gpio’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:40: error: invalid use of undefined type ‘struct pt_gpio’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:38: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+cc1: some warnings being treated as errors
+make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/gpio-amdpt_branch.o] Error 1
+make[4]: *** [../scripts/Makefile.build:554: drivers/gpio] Error 2
+make[4]: *** Waiting for unfinished jobs....
+make[3]: *** [../scripts/Makefile.build:554: drivers] Error 2
+make[3]: *** Waiting for unfinished jobs....
+make[2]: *** [/home/amd/linux/Makefile:2003: .] Error 2
+make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Error 2
+make: *** [Makefile:248: __sub-make] Error 2
+
+[15:17:05] Configuring KUnit Kernel ...
+[15:17:05] Building KUnit Kernel ...
+Populating config with:
+$ make ARCH=x86_64 O=.kunit olddefconfig
+Building with:
+$ make all compile_commands.json scripts_gdb ARCH=x86_64 O=.kunit --jobs=4
+ERROR:root:../drivers/gpio/pt_gpio_request_kunit_test.c:7:8: error: redefinition of ‘struct pt_gpio_chip’
+    7 | struct pt_gpio_chip {
+      |        ^~~~~~~~~~~~
+In file included from ../drivers/gpio/pt_gpio_request_kunit_test.c:5:
+../drivers/gpio/gpio-amdpt.c:26:8: note: originally defined here
+   26 | struct pt_gpio_chip {
+      |        ^~~~~~~~~~~~
+../drivers/gpio/pt_gpio_request_kunit_test.c:11: warning: "PT_SYNC_REG" redefined
+   11 | #define PT_SYNC_REG 0x0
+      | 
+../drivers/gpio/gpio-amdpt.c:24: note: this is the location of the previous definition
+   24 | #define PT_SYNC_REG        0x28
+      | 
+../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘create_mock_gpio_chip’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:30:11: error: ‘struct gpio_chip’ has no member named ‘private’
+   30 |         gc->private = pt_gpio;
+      |           ^~
+../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_success’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:41:42: error: ‘struct gpio_chip’ has no member named ‘private’
+   41 |         struct pt_gpio_chip *pt_gpio = gc->private;
+      |                                          ^~
+../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_pin_already_used’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:57:42: error: ‘struct gpio_chip’ has no member named ‘private’
+   57 |         struct pt_gpio_chip *pt_gpio = gc->private;
+      |                                          ^~
+../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_multiple_pins’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:73:42: error: ‘struct gpio_chip’ has no member named ‘private’
+   73 |         struct pt_gpio_chip *pt_gpio = gc->private;
+      |                                          ^~
+../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_boundary_values’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:98:42: error: ‘struct gpio_chip’ has no member named ‘private’
+   98 |         struct pt_gpio_chip *pt_gpio = gc->private;
+      |                                          ^~
+make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/pt_gpio_request_kunit_test.o] Error 1
+make[5]: *** Waiting for unfinished jobs....
+../drivers/gpio/gpio-amdpt_branch.c: In function ‘pt_gpio_probe_test’:
+../drivers/gpio/gpio-amdpt_branch.c:15:12: error: implicit declaration of function ‘kunit_alloc_platform_device’; did you mean ‘is_sh_early_platform_device’? [-Werror=implicit-function-declaration]
+   15 |     pdev = kunit_alloc_platform_device(test);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |            is_sh_early_platform_device
+../drivers/gpio/gpio-amdpt_branch.c:15:10: warning: assignment to ‘struct platform_device *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   15 |     pdev = kunit_alloc_platform_device(test);
+      |          ^
+In file included from ../include/linux/percpu.h:5,
+                 from ../arch/x86/include/asm/msr.h:16,
+                 from ../arch/x86/include/asm/tsc.h:11,
+                 from ../arch/x86/include/asm/timex.h:6,
+                 from ../include/linux/timex.h:67,
+                 from ../include/linux/time32.h:13,
+                 from ../include/linux/time.h:60,
+                 from ../include/linux/stat.h:19,
+                 from ../include/linux/module.h:13,
+                 from ../include/kunit/test.h:24,
+                 from ../drivers/gpio/gpio-amdpt_branch.c:1:
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:239:16: note: in definition of macro ‘alloc_hooks_tag’
+  239 |         typeof(_do_alloc) _res;                                         \
+      |                ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:243:24: note: in definition of macro ‘alloc_hooks_tag’
+  243 |                 _res = _do_alloc;                                       \
+      |                        ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:246:24: note: in definition of macro ‘alloc_hooks_tag’
+  246 |                 _res = _do_alloc;                                       \
+      |                        ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:13: warning: assignment to ‘struct pt_gpio *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |             ^
+../drivers/gpio/gpio-amdpt_branch.c:26:12: error: invalid use of undefined type ‘struct pt_gpio’
+   26 |     pt_gpio->reg_base = fake_reg_base;
+      |            ^~
+../drivers/gpio/gpio-amdpt_branch.c:32:22: error: invalid use of undefined type ‘struct pt_gpio’
+   32 |     writel(0, pt_gpio->reg_base + PT_SYNC_REG);
+      |                      ^~
+../drivers/gpio/gpio-amdpt_branch.c:33:22: error: invalid use of undefined type ‘struct pt_gpio’
+   33 |     writel(0, pt_gpio->reg_base + PT_CLOCKRATE_REG);
+      |                      ^~
+../drivers/gpio/gpio-amdpt_branch.c:36:40: error: invalid use of undefined type ‘struct pt_gpio’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:40: error: invalid use of undefined type ‘struct pt_gpio’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:38: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:40: error: invalid use of undefined type ‘struct pt_gpio’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:40: error: invalid use of undefined type ‘struct pt_gpio’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:38: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+cc1: some warnings being treated as errors
+make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/gpio-amdpt_branch.o] Error 1
 make[4]: *** [../scripts/Makefile.build:554: drivers/gpio] Error 2
 make[4]: *** Waiting for unfinished jobs....
 make[3]: *** [../scripts/Makefile.build:554: drivers] Error 2
@@ -76,332 +503,155 @@ make[2]: *** [/home/amd/linux/Makefile:2003: .] Error 2
 make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Error 2
 make: *** [Makefile:248: __sub-make] Error 2
 
-[16:21:49] Configuring KUnit Kernel ...
-[16:21:49] Building KUnit Kernel ...
+[15:18:20] Configuring KUnit Kernel ...
+[15:18:20] Building KUnit Kernel ...
 Populating config with:
 $ make ARCH=x86_64 O=.kunit olddefconfig
 Building with:
 $ make all compile_commands.json scripts_gdb ARCH=x86_64 O=.kunit --jobs=4
-ERROR:root:Build interruption occurred. Cleaning console.
-ERROR:root:make[1]: Entering directory '/home/amd/linux/.kunit'
-make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Interrupt
-make: *** [Makefile:248: __sub-make] Interrupt
-
-[16:23:34] Configuring KUnit Kernel ...
-[16:23:34] Building KUnit Kernel ...
-Populating config with:
-$ make ARCH=x86_64 O=.kunit olddefconfig
 ERROR:root:../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘pt_gpio_request’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:18:9: error: implicit declaration of function ‘dev_dbg’ [-Werror=implicit-function-declaration]
-   18 |         dev_dbg(gc->parent, "pt_gpio_request offset=%x\n", offset);
+../drivers/gpio/pt_gpio_request_kunit_test.c:22:9: error: implicit declaration of function ‘dev_dbg’ [-Werror=implicit-function-declaration]
+   22 |         dev_dbg(gc->parent, "pt_gpio_request offset=%x\n", offset);
       |         ^~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c:24:17: error: implicit declaration of function ‘dev_warn’ [-Werror=implicit-function-declaration]
-   24 |                 dev_warn(gc->parent, "PT GPIO pin %x reconfigured\n",
+../drivers/gpio/pt_gpio_request_kunit_test.c:28:17: error: implicit declaration of function ‘dev_warn’ [-Werror=implicit-function-declaration]
+   28 |                 dev_warn(gc->parent, "PT GPIO pin %x reconfigured\n",
       |                 ^~~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_success’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:53:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   53 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_request_kunit_test.c:55:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   55 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_pin_already_used’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:75:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   75 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_request_kunit_test.c:77:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   77 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_multiple_pins’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:97:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   97 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_request_kunit_test.c:99:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   99 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
+../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘create_mock_gpio_chip’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:69:11: error: ‘struct gpio_chip’ has no member named ‘private’
+   69 |         gc->private = pt_gpio;
+      |           ^~
 cc1: some warnings being treated as errors
 make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/pt_gpio_request_kunit_test.o] Error 1
 make[5]: *** Waiting for unfinished jobs....
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘pt_gpio_free’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:26:9: error: implicit declaration of function ‘dev_dbg’ [-Werror=implicit-function-declaration]
-   26 |         dev_dbg(gc->parent, "pt_gpio_free offset=%x\n", offset);
-      |         ^~~~~~~
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_basic’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:44:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   44 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:46:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   46 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_first_bit’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:64:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   64 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:66:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   66 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_last_bit’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:84:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   84 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:86:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   86 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_clear_multiple_bits’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:104:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-  104 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:106:16: error: ‘struct gpio_chip’ has no member named ‘private’
-  106 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_noop_on_zero_reg’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:125:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-  125 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:127:16: error: ‘struct gpio_chip’ has no member named ‘private’
-  127 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
+../drivers/gpio/gpio-amdpt_branch.c: In function ‘pt_gpio_probe_test’:
+../drivers/gpio/gpio-amdpt_branch.c:15:12: error: implicit declaration of function ‘kunit_alloc_platform_device’; did you mean ‘is_sh_early_platform_device’? [-Werror=implicit-function-declaration]
+   15 |     pdev = kunit_alloc_platform_device(test);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |            is_sh_early_platform_device
+../drivers/gpio/gpio-amdpt_branch.c:15:10: warning: assignment to ‘struct platform_device *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   15 |     pdev = kunit_alloc_platform_device(test);
+      |          ^
+In file included from ../include/linux/percpu.h:5,
+                 from ../arch/x86/include/asm/msr.h:16,
+                 from ../arch/x86/include/asm/tsc.h:11,
+                 from ../arch/x86/include/asm/timex.h:6,
+                 from ../include/linux/timex.h:67,
+                 from ../include/linux/time32.h:13,
+                 from ../include/linux/time.h:60,
+                 from ../include/linux/stat.h:19,
+                 from ../include/linux/module.h:13,
+                 from ../include/kunit/test.h:24,
+                 from ../drivers/gpio/gpio-amdpt_branch.c:1:
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:239:16: note: in definition of macro ‘alloc_hooks_tag’
+  239 |         typeof(_do_alloc) _res;                                         \
+      |                ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:243:24: note: in definition of macro ‘alloc_hooks_tag’
+  243 |                 _res = _do_alloc;                                       \
+      |                        ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:246:24: note: in definition of macro ‘alloc_hooks_tag’
+  246 |                 _res = _do_alloc;                                       \
+      |                        ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:13: warning: assignment to ‘struct pt_gpio *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |             ^
+../drivers/gpio/gpio-amdpt_branch.c:26:12: error: invalid use of undefined type ‘struct pt_gpio’
+   26 |     pt_gpio->reg_base = fake_reg_base;
+      |            ^~
+../drivers/gpio/gpio-amdpt_branch.c:32:22: error: invalid use of undefined type ‘struct pt_gpio’
+   32 |     writel(0, pt_gpio->reg_base + PT_SYNC_REG);
+      |                      ^~
+../drivers/gpio/gpio-amdpt_branch.c:33:22: error: invalid use of undefined type ‘struct pt_gpio’
+   33 |     writel(0, pt_gpio->reg_base + PT_CLOCKRATE_REG);
+      |                      ^~
+../drivers/gpio/gpio-amdpt_branch.c:36:40: error: invalid use of undefined type ‘struct pt_gpio’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:40: error: invalid use of undefined type ‘struct pt_gpio’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:38: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:40: error: invalid use of undefined type ‘struct pt_gpio’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:40: error: invalid use of undefined type ‘struct pt_gpio’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:38: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
 cc1: some warnings being treated as errors
-make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/pt_gpio_free_kunit_test.o] Error 1
-make[4]: *** [../scripts/Makefile.build:554: drivers/gpio] Error 2
-make[4]: *** Waiting for unfinished jobs....
-make[3]: *** [../scripts/Makefile.build:554: drivers] Error 2
-make[2]: *** [/home/amd/linux/Makefile:2003: .] Error 2
-make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Error 2
-make: *** [Makefile:248: __sub-make] Error 2
-
-[16:25:55] Configuring KUnit Kernel ...
-[16:25:55] Building KUnit Kernel ...
-Populating config with:
-$ make ARCH=x86_64 O=.kunit olddefconfig
-Building with:
-$ make all compile_commands.json scripts_gdb ARCH=x86_64 O=.kunit --jobs=4
-ERROR:root:Build interruption occurred. Cleaning console.
-ERROR:root:make[1]: Entering directory '/home/amd/linux/.kunit'
-  GEN     Makefile
-make[1]: *** wait: No child processes.  Stop.
-make[1]: *** Waiting for unfinished jobs....
-make[1]: *** wait: No child processes.  Stop.
-make: *** [Makefile:248: __sub-make] Error 2
-
-[16:27:24] Configuring KUnit Kernel ...
-[16:27:24] Building KUnit Kernel ...
-Populating config with:
-$ make ARCH=x86_64 O=.kunit olddefconfig
-ERROR:root:../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘pt_gpio_request’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:18:9: error: implicit declaration of function ‘dev_dbg’ [-Werror=implicit-function-declaration]
-   18 |         dev_dbg(gc->parent, "pt_gpio_request offset=%x\n", offset);
-      |         ^~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c:24:17: error: implicit declaration of function ‘dev_warn’ [-Werror=implicit-function-declaration]
-   24 |                 dev_warn(gc->parent, "PT GPIO pin %x reconfigured\n",
-      |                 ^~~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_success’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:53:11: error: ‘struct gpio_chip’ has no member named ‘private’
-   53 |         gc->private = pt_gpio;
-      |           ^~
-In file included from ../include/linux/kref.h:16,
-                 from ../include/kunit/test.h:22,
-                 from ../drivers/gpio/pt_gpio_request_kunit_test.c:1:
-../drivers/gpio/pt_gpio_request_kunit_test.c:55:24: error: passing argument 1 of ‘spinlock_check’ from incompatible pointer type [-Werror=incompatible-pointer-types]
-   55 |         spin_lock_init(&gc->bgpio_lock);
-      |                        ^~~~~~~~~~~~~~~
-      |                        |
-      |                        raw_spinlock_t * {aka struct raw_spinlock *}
-../include/linux/spinlock.h:343:24: note: in definition of macro ‘spin_lock_init’
-  343 |         spinlock_check(_lock);                  \
-      |                        ^~~~~
-../include/linux/spinlock.h:324:67: note: expected ‘spinlock_t *’ {aka ‘struct spinlock *’} but argument is of type ‘raw_spinlock_t *’ {aka ‘struct raw_spinlock *’}
-  324 | static __always_inline raw_spinlock_t *spinlock_check(spinlock_t *lock)
-      |                                                       ~~~~~~~~~~~~^~~~
-In file included from ../include/linux/spinlock.h:89:
-../include/linux/spinlock_types.h:41:9: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   41 |         (spinlock_t) __SPIN_LOCK_INITIALIZER(lockname)
-      |         ^
-../include/linux/spinlock.h:344:20: note: in expansion of macro ‘__SPIN_LOCK_UNLOCKED’
-  344 |         *(_lock) = __SPIN_LOCK_UNLOCKED(_lock); \
-      |                    ^~~~~~~~~~~~~~~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c:55:9: note: in expansion of macro ‘spin_lock_init’
-   55 |         spin_lock_init(&gc->bgpio_lock);
-      |         ^~~~~~~~~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_pin_already_used’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:78:11: error: ‘struct gpio_chip’ has no member named ‘private’
-   78 |         gc->private = pt_gpio;
-      |           ^~
-../drivers/gpio/pt_gpio_request_kunit_test.c:80:24: error: passing argument 1 of ‘spinlock_check’ from incompatible pointer type [-Werror=incompatible-pointer-types]
-   80 |         spin_lock_init(&gc->bgpio_lock);
-      |                        ^~~~~~~~~~~~~~~
-      |                        |
-      |                        raw_spinlock_t * {aka struct raw_spinlock *}
-../include/linux/spinlock.h:343:24: note: in definition of macro ‘spin_lock_init’
-  343 |         spinlock_check(_lock);                  \
-      |                        ^~~~~
-../include/linux/spinlock.h:324:67: note: expected ‘spinlock_t *’ {aka ‘struct spinlock *’} but argument is of type ‘raw_spinlock_t *’ {aka ‘struct raw_spinlock *’}
-  324 | static __always_inline raw_spinlock_t *spinlock_check(spinlock_t *lock)
-      |                                                       ~~~~~~~~~~~~^~~~
-../include/linux/spinlock_types.h:41:9: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   41 |         (spinlock_t) __SPIN_LOCK_INITIALIZER(lockname)
-      |         ^
-../include/linux/spinlock.h:344:20: note: in expansion of macro ‘__SPIN_LOCK_UNLOCKED’
-  344 |         *(_lock) = __SPIN_LOCK_UNLOCKED(_lock); \
-      |                    ^~~~~~~~~~~~~~~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c:80:9: note: in expansion of macro ‘spin_lock_init’
-   80 |         spin_lock_init(&gc->bgpio_lock);
-      |         ^~~~~~~~~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_multiple_pins’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:103:11: error: ‘struct gpio_chip’ has no member named ‘private’
-  103 |         gc->private = pt_gpio;
-      |           ^~
-../drivers/gpio/pt_gpio_request_kunit_test.c:105:24: error: passing argument 1 of ‘spinlock_check’ from incompatible pointer type [-Werror=incompatible-pointer-types]
-  105 |         spin_lock_init(&gc->bgpio_lock);
-      |                        ^~~~~~~~~~~~~~~
-      |                        |
-      |                        raw_spinlock_t * {aka struct raw_spinlock *}
-../include/linux/spinlock.h:343:24: note: in definition of macro ‘spin_lock_init’
-  343 |         spinlock_check(_lock);                  \
-      |                        ^~~~~
-../include/linux/spinlock.h:324:67: note: expected ‘spinlock_t *’ {aka ‘struct spinlock *’} but argument is of type ‘raw_spinlock_t *’ {aka ‘struct raw_spinlock *’}
-  324 | static __always_inline raw_spinlock_t *spinlock_check(spinlock_t *lock)
-      |                                                       ~~~~~~~~~~~~^~~~
-../include/linux/spinlock_types.h:41:9: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   41 |         (spinlock_t) __SPIN_LOCK_INITIALIZER(lockname)
-      |         ^
-../include/linux/spinlock.h:344:20: note: in expansion of macro ‘__SPIN_LOCK_UNLOCKED’
-  344 |         *(_lock) = __SPIN_LOCK_UNLOCKED(_lock); \
-      |                    ^~~~~~~~~~~~~~~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c:105:9: note: in expansion of macro ‘spin_lock_init’
-  105 |         spin_lock_init(&gc->bgpio_lock);
-      |         ^~~~~~~~~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘test_pt_gpio_request_pin_reused_after_clear’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:134:11: error: ‘struct gpio_chip’ has no member named ‘private’
-  134 |         gc->private = pt_gpio;
-      |           ^~
-../drivers/gpio/pt_gpio_request_kunit_test.c:136:24: error: passing argument 1 of ‘spinlock_check’ from incompatible pointer type [-Werror=incompatible-pointer-types]
-  136 |         spin_lock_init(&gc->bgpio_lock);
-      |                        ^~~~~~~~~~~~~~~
-      |                        |
-      |                        raw_spinlock_t * {aka struct raw_spinlock *}
-../include/linux/spinlock.h:343:24: note: in definition of macro ‘spin_lock_init’
-  343 |         spinlock_check(_lock);                  \
-      |                        ^~~~~
-../include/linux/spinlock.h:324:67: note: expected ‘spinlock_t *’ {aka ‘struct spinlock *’} but argument is of type ‘raw_spinlock_t *’ {aka ‘struct raw_spinlock *’}
-  324 | static __always_inline raw_spinlock_t *spinlock_check(spinlock_t *lock)
-      |                                                       ~~~~~~~~~~~~^~~~
-../include/linux/spinlock_types.h:41:9: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   41 |         (spinlock_t) __SPIN_LOCK_INITIALIZER(lockname)
-      |         ^
-../include/linux/spinlock.h:344:20: note: in expansion of macro ‘__SPIN_LOCK_UNLOCKED’
-  344 |         *(_lock) = __SPIN_LOCK_UNLOCKED(_lock); \
-      |                    ^~~~~~~~~~~~~~~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c:136:9: note: in expansion of macro ‘spin_lock_init’
-  136 |         spin_lock_init(&gc->bgpio_lock);
-      |         ^~~~~~~~~~~~~~
-cc1: some warnings being treated as errors
-make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/pt_gpio_request_kunit_test.o] Error 1
-make[5]: *** Waiting for unfinished jobs....
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘pt_gpio_free’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:26:9: error: implicit declaration of function ‘dev_dbg’ [-Werror=implicit-function-declaration]
-   26 |         dev_dbg(gc->parent, "pt_gpio_free offset=%x\n", offset);
-      |         ^~~~~~~
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_basic’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:44:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   44 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:46:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   46 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_first_bit’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:64:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   64 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:66:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   66 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_last_bit’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:84:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   84 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:86:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   86 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_clear_multiple_bits’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:104:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-  104 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:106:16: error: ‘struct gpio_chip’ has no member named ‘private’
-  106 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_noop_on_zero_reg’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:125:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-  125 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:127:16: error: ‘struct gpio_chip’ has no member named ‘private’
-  127 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-cc1: some warnings being treated as errors
-make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/pt_gpio_free_kunit_test.o] Error 1
-In file included from ../include/linux/thread_info.h:23,
-                 from ../include/linux/spinlock.h:60,
-                 from ../include/linux/kref.h:16,
-                 from ../include/kunit/test.h:22,
-                 from ../drivers/gpio/pt_gpio_probe_kunit_test.c:1:
-../drivers/gpio/pt_gpio_probe_kunit_test.c: In function ‘mock_ioremap’:
-../arch/x86/include/asm/current.h:28:17: error: passing argument 1 of ‘kunit_kzalloc’ from incompatible pointer type [-Werror=incompatible-pointer-types]
-   28 | #define current get_current()
-      |                 ^~~~~~~~~~~~~
-      |                 |
-      |                 struct task_struct *
-../drivers/gpio/pt_gpio_probe_kunit_test.c:35:30: note: in expansion of macro ‘current’
-   35 |         return kunit_kzalloc(current, size, GFP_KERNEL);
-      |                              ^~~~~~~
-../include/kunit/test.h:467:49: note: expected ‘struct kunit *’ but argument is of type ‘struct task_struct *’
-  467 | static inline void *kunit_kzalloc(struct kunit *test, size_t size, gfp_t gfp)
-      |                                   ~~~~~~~~~~~~~~^~~~
-../drivers/gpio/pt_gpio_probe_kunit_test.c: In function ‘create_mock_pdev’:
-../drivers/gpio/pt_gpio_probe_kunit_test.c:54:22: error: assignment to ‘void (*)(struct device *)’ from incompatible pointer type ‘void (*)(struct kunit *, const void *)’ [-Werror=incompatible-pointer-types]
-   54 |         dev->release = kunit_kfree;
-      |                      ^
-../drivers/gpio/pt_gpio_probe_kunit_test.c:57:21: error: incompatible types when assigning to type ‘struct device’ from type ‘struct device *’
-   57 |         adev->dev = dev;
-      |                     ^~~
-../drivers/gpio/pt_gpio_probe_kunit_test.c: In function ‘mock_devm_kzalloc_success’:
-../arch/x86/include/asm/current.h:28:17: error: passing argument 1 of ‘kunit_kzalloc’ from incompatible pointer type [-Werror=incompatible-pointer-types]
-   28 | #define current get_current()
-      |                 ^~~~~~~~~~~~~
-      |                 |
-      |                 struct task_struct *
-../drivers/gpio/pt_gpio_probe_kunit_test.c:113:30: note: in expansion of macro ‘current’
-  113 |         return kunit_kzalloc(current, size, GFP_KERNEL);
-      |                              ^~~~~~~
-../include/kunit/test.h:467:49: note: expected ‘struct kunit *’ but argument is of type ‘struct task_struct *’
-  467 | static inline void *kunit_kzalloc(struct kunit *test, size_t size, gfp_t gfp)
-      |                                   ~~~~~~~~~~~~~~^~~~
-../drivers/gpio/pt_gpio_probe_kunit_test.c: At top level:
-../drivers/gpio/pt_gpio_probe_kunit_test.c:169: warning: "ACPI_COMPANION" redefined
-  169 | #define ACPI_COMPANION(dev) ((dev)->acpi_node.companion)
-      | 
-In file included from ../drivers/gpio/pt_gpio_probe_kunit_test.c:3:
-../include/linux/acpi.h:57: note: this is the location of the previous definition
-   57 | #define ACPI_COMPANION(dev)             to_acpi_device_node((dev)->fwnode)
-      | 
-../drivers/gpio/pt_gpio_probe_kunit_test.c: In function ‘pt_gpio_probe’:
-../drivers/gpio/pt_gpio_probe_kunit_test.c:169:35: error: ‘struct device’ has no member named ‘acpi_node’
-  169 | #define ACPI_COMPANION(dev) ((dev)->acpi_node.companion)
-      |                                   ^~
-../drivers/gpio/pt_gpio_probe_kunit_test.c:177:14: note: in expansion of macro ‘ACPI_COMPANION’
-  177 |         if (!ACPI_COMPANION(dev)) {
-      |              ^~~~~~~~~~~~~~
-../drivers/gpio/pt_gpio_probe_kunit_test.c: At top level:
-../drivers/gpio/pt_gpio_probe_kunit_test.c:109:14: warning: ‘__real_devm_kzalloc’ declared ‘static’ but never defined [-Wunused-function]
-  109 | static void *__real_devm_kzalloc(struct device *dev, size_t size, gfp_t gfp);
-      |              ^~~~~~~~~~~~~~~~~~~
-../drivers/gpio/pt_gpio_probe_kunit_test.c:121:12: warning: ‘real_bgpio_init’ used but never defined
-  121 | static int real_bgpio_init(struct gpio_chip *gc, struct device *dev,
-      |            ^~~~~~~~~~~~~~~
-../drivers/gpio/pt_gpio_probe_kunit_test.c:68:12: warning: ‘mock_bgpio_init’ defined but not used [-Wunused-function]
-   68 | static int mock_bgpio_init(struct gpio_chip *gc, struct device *dev,
-      |            ^~~~~~~~~~~~~~~
-cc1: some warnings being treated as errors
-make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/pt_gpio_probe_kunit_test.o] Error 1
+make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/gpio-amdpt_branch.o] Error 1
 make[4]: *** [../scripts/Makefile.build:554: drivers/gpio] Error 2
 make[3]: *** [../scripts/Makefile.build:554: drivers] Error 2
 make[3]: *** Waiting for unfinished jobs....
@@ -409,100 +659,166 @@ make[2]: *** [/home/amd/linux/Makefile:2003: .] Error 2
 make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Error 2
 make: *** [Makefile:248: __sub-make] Error 2
 
-[16:28:48] Configuring KUnit Kernel ...
-[16:28:48] Building KUnit Kernel ...
+[15:19:33] Configuring KUnit Kernel ...
+[15:19:33] Building KUnit Kernel ...
 Populating config with:
 $ make ARCH=x86_64 O=.kunit olddefconfig
 Building with:
 $ make all compile_commands.json scripts_gdb ARCH=x86_64 O=.kunit --jobs=4
-ERROR:root:Build interruption occurred. Cleaning console.
-ERROR:root:make[1]: Entering directory '/home/amd/linux/.kunit'
-make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Interrupt
-make: *** [Makefile:248: __sub-make] Interrupt
+ERROR:root:mv: cannot stat 'include/config/.tmp_kernel.release': No such file or directory
+make[2]: *** [/home/amd/linux/Makefile:1250: include/config/kernel.release] Error 1
+make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Error 2
+make: *** [Makefile:248: __sub-make] Error 2
 
-[16:30:19] Configuring KUnit Kernel ...
-[16:30:19] Building KUnit Kernel ...
+[15:20:41] Configuring KUnit Kernel ...
+[15:20:41] Building KUnit Kernel ...
 Populating config with:
 $ make ARCH=x86_64 O=.kunit olddefconfig
+Building with:
+$ make all compile_commands.json scripts_gdb ARCH=x86_64 O=.kunit --jobs=4
 ERROR:root:../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘pt_gpio_request’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:18:9: error: implicit declaration of function ‘dev_dbg’ [-Werror=implicit-function-declaration]
-   18 |         dev_dbg(gc->parent, "pt_gpio_request offset=%x\n", offset);
+../drivers/gpio/pt_gpio_request_kunit_test.c:22:9: error: implicit declaration of function ‘dev_dbg’ [-Werror=implicit-function-declaration]
+   22 |         dev_dbg(gc->parent, "pt_gpio_request offset=%x\n", offset);
       |         ^~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c:24:17: error: implicit declaration of function ‘dev_warn’ [-Werror=implicit-function-declaration]
-   24 |                 dev_warn(gc->parent, "PT GPIO pin %x reconfigured\n",
+../drivers/gpio/pt_gpio_request_kunit_test.c:28:17: error: implicit declaration of function ‘dev_warn’ [-Werror=implicit-function-declaration]
+   28 |                 dev_warn(gc->parent, "PT GPIO pin %x reconfigured\n",
       |                 ^~~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘pt_gpio_request_test_init’:
-../drivers/gpio/pt_gpio_request_kunit_test.c:54:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   54 |         mock_gc->private = mock_pt_gpio;
-      |                ^~
-In file included from ../include/linux/kref.h:16,
-                 from ../include/kunit/test.h:22,
-                 from ../drivers/gpio/pt_gpio_request_kunit_test.c:1:
-../drivers/gpio/pt_gpio_request_kunit_test.c:56:24: error: passing argument 1 of ‘spinlock_check’ from incompatible pointer type [-Werror=incompatible-pointer-types]
-   56 |         spin_lock_init(&mock_gc->bgpio_lock);
-      |                        ^~~~~~~~~~~~~~~~~~~~
-      |                        |
-      |                        raw_spinlock_t * {aka struct raw_spinlock *}
-../include/linux/spinlock.h:343:24: note: in definition of macro ‘spin_lock_init’
-  343 |         spinlock_check(_lock);                  \
-      |                        ^~~~~
-../include/linux/spinlock.h:324:67: note: expected ‘spinlock_t *’ {aka ‘struct spinlock *’} but argument is of type ‘raw_spinlock_t *’ {aka ‘struct raw_spinlock *’}
-  324 | static __always_inline raw_spinlock_t *spinlock_check(spinlock_t *lock)
-      |                                                       ~~~~~~~~~~~~^~~~
-In file included from ../include/linux/spinlock.h:89:
-../include/linux/spinlock_types.h:41:9: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   41 |         (spinlock_t) __SPIN_LOCK_INITIALIZER(lockname)
-      |         ^
-../include/linux/spinlock.h:344:20: note: in expansion of macro ‘__SPIN_LOCK_UNLOCKED’
-  344 |         *(_lock) = __SPIN_LOCK_UNLOCKED(_lock); \
-      |                    ^~~~~~~~~~~~~~~~~~~~
-../drivers/gpio/pt_gpio_request_kunit_test.c:56:9: note: in expansion of macro ‘spin_lock_init’
-   56 |         spin_lock_init(&mock_gc->bgpio_lock);
-      |         ^~~~~~~~~~~~~~
+../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘create_mock_gpio_chip’:
+../drivers/gpio/pt_gpio_request_kunit_test.c:69:11: error: ‘struct gpio_chip’ has no member named ‘private’
+   69 |         gc->private = pt_gpio;
+      |           ^~
 cc1: some warnings being treated as errors
 make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/pt_gpio_request_kunit_test.o] Error 1
 make[5]: *** Waiting for unfinished jobs....
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘pt_gpio_free’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:26:9: error: implicit declaration of function ‘dev_dbg’ [-Werror=implicit-function-declaration]
-   26 |         dev_dbg(gc->parent, "pt_gpio_free offset=%x\n", offset);
-      |         ^~~~~~~
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_basic’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:44:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   44 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:46:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   46 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_first_bit’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:64:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   64 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:66:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   66 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_last_bit’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:84:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-   84 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:86:16: error: ‘struct gpio_chip’ has no member named ‘private’
-   86 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_clear_multiple_bits’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:104:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-  104 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:106:16: error: ‘struct gpio_chip’ has no member named ‘private’
-  106 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
-../drivers/gpio/pt_gpio_free_kunit_test.c: In function ‘test_pt_gpio_free_noop_on_zero_reg’:
-../drivers/gpio/pt_gpio_free_kunit_test.c:125:30: error: incompatible types when assigning to type ‘raw_spinlock_t’ {aka ‘struct raw_spinlock’} from type ‘spinlock_t’ {aka ‘struct spinlock’}
-  125 |         ctx->gc.bgpio_lock = ctx->lock;
-      |                              ^~~
-../drivers/gpio/pt_gpio_free_kunit_test.c:127:16: error: ‘struct gpio_chip’ has no member named ‘private’
-  127 |         ctx->gc.private = &ctx->pt_gpio;
-      |                ^
+../drivers/gpio/gpio-amdpt_branch.c: In function ‘pt_gpio_probe_test’:
+../drivers/gpio/gpio-amdpt_branch.c:15:12: error: implicit declaration of function ‘kunit_alloc_platform_device’; did you mean ‘is_sh_early_platform_device’? [-Werror=implicit-function-declaration]
+   15 |     pdev = kunit_alloc_platform_device(test);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |            is_sh_early_platform_device
+../drivers/gpio/gpio-amdpt_branch.c:15:10: warning: assignment to ‘struct platform_device *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   15 |     pdev = kunit_alloc_platform_device(test);
+      |          ^
+In file included from ../include/linux/percpu.h:5,
+                 from ../arch/x86/include/asm/msr.h:16,
+                 from ../arch/x86/include/asm/tsc.h:11,
+                 from ../arch/x86/include/asm/timex.h:6,
+                 from ../include/linux/timex.h:67,
+                 from ../include/linux/time32.h:13,
+                 from ../include/linux/time.h:60,
+                 from ../include/linux/stat.h:19,
+                 from ../include/linux/module.h:13,
+                 from ../include/kunit/test.h:24,
+                 from ../drivers/gpio/gpio-amdpt_branch.c:1:
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:239:16: note: in definition of macro ‘alloc_hooks_tag’
+  239 |         typeof(_do_alloc) _res;                                         \
+      |                ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:243:24: note: in definition of macro ‘alloc_hooks_tag’
+  243 |                 _res = _do_alloc;                                       \
+      |                        ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:29: error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |                             ^
+../include/linux/alloc_tag.h:246:24: note: in definition of macro ‘alloc_hooks_tag’
+  246 |                 _res = _do_alloc;                                       \
+      |                        ^~~~~~~~~
+../include/linux/slab.h:1041:49: note: in expansion of macro ‘alloc_hooks’
+ 1041 | #define kzalloc(...)                            alloc_hooks(kzalloc_noprof(__VA_ARGS__))
+      |                                                 ^~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:15: note: in expansion of macro ‘kzalloc’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |               ^~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:19:13: warning: assignment to ‘struct pt_gpio *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+      |             ^
+../drivers/gpio/gpio-amdpt_branch.c:26:12: error: invalid use of undefined type ‘struct pt_gpio’
+   26 |     pt_gpio->reg_base = fake_reg_base;
+      |            ^~
+../drivers/gpio/gpio-amdpt_branch.c:32:22: error: invalid use of undefined type ‘struct pt_gpio’
+   32 |     writel(0, pt_gpio->reg_base + PT_SYNC_REG);
+      |                      ^~
+../drivers/gpio/gpio-amdpt_branch.c:33:22: error: invalid use of undefined type ‘struct pt_gpio’
+   33 |     writel(0, pt_gpio->reg_base + PT_CLOCKRATE_REG);
+      |                      ^~
+../drivers/gpio/gpio-amdpt_branch.c:36:40: error: invalid use of undefined type ‘struct pt_gpio’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:40: error: invalid use of undefined type ‘struct pt_gpio’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:38: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:36:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   36 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_SYNC_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:40: error: invalid use of undefined type ‘struct pt_gpio’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:22: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:40: error: invalid use of undefined type ‘struct pt_gpio’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |                                        ^~
+../include/kunit/test.h:775:38: note: in definition of macro ‘KUNIT_BASE_BINARY_ASSERTION’
+  775 |         const typeof(left) __left = (left);                                    \
+      |                                      ^~~~
+../include/kunit/test.h:971:9: note: in expansion of macro ‘KUNIT_BINARY_INT_ASSERTION’
+  971 |         KUNIT_BINARY_INT_ASSERTION(test,                                       \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../include/kunit/test.h:968:9: note: in expansion of macro ‘KUNIT_EXPECT_EQ_MSG’
+  968 |         KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+      |         ^~~~~~~~~~~~~~~~~~~
+../drivers/gpio/gpio-amdpt_branch.c:37:5: note: in expansion of macro ‘KUNIT_EXPECT_EQ’
+   37 |     KUNIT_EXPECT_EQ(test, readl(pt_gpio->reg_base + PT_CLOCKRATE_REG), 0u);
+      |     ^~~~~~~~~~~~~~~
 cc1: some warnings being treated as errors
-make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/pt_gpio_free_kunit_test.o] Error 1
+make[5]: *** [../scripts/Makefile.build:287: drivers/gpio/gpio-amdpt_branch.o] Error 1
 make[4]: *** [../scripts/Makefile.build:554: drivers/gpio] Error 2
 make[4]: *** Waiting for unfinished jobs....
 make[3]: *** [../scripts/Makefile.build:554: drivers] Error 2
@@ -510,21 +826,9 @@ make[2]: *** [/home/amd/linux/Makefile:2003: .] Error 2
 make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Error 2
 make: *** [Makefile:248: __sub-make] Error 2
 
-[16:38:00] Configuring KUnit Kernel ...
-[16:38:00] Building KUnit Kernel ...
+[15:21:38] Configuring KUnit Kernel ...
+[15:21:38] Building KUnit Kernel ...
 Populating config with:
 $ make ARCH=x86_64 O=.kunit olddefconfig
 Building with:
 $ make all compile_commands.json scripts_gdb ARCH=x86_64 O=.kunit --jobs=4
-ERROR:root:Build interruption occurred. Cleaning console.
-ERROR:root:make[1]: Entering directory '/home/amd/linux/.kunit'
-  GEN     Makefile
-make[3]: *** [../scripts/kconfig/Makefile:85: olddefconfig] Interrupt
-make[2]: *** [/home/amd/linux/Makefile:735: olddefconfig] Interrupt
-make[1]: *** [/home/amd/linux/Makefile:248: __sub-make] Interrupt
-make: *** [Makefile:248: __sub-make] Interrupt
-
-[16:39:22] Configuring KUnit Kernel ...
-[16:39:22] Building KUnit Kernel ...
-Populating config with:
-$ make ARCH=x86_64 O=.kunit olddefconfig
