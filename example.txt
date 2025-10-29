@@ -1,1 +1,1 @@
-PERPLEXI_API_KEY"nithinpplx-pl0nB1WlXg2ORnnuFL5NCsvejFZElxFniln2P4Q5mvqWdGxN"
+PERPLEXI_API_KEY"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"

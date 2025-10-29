@@ -1,4 +1,7 @@
-ERROR:root:../drivers/gpio/gpio-amdpt_branch.c: In function ‘pt_gpio_probe_test’:
+ERROR:root:../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘create_mock_gpio_chip’:
+
+error: ‘struct gpio_chip’ has no member named ‘private’
+   30 |         gc->private = pt_gpio;
 
 error: implicit declaration of function ‘kunit_alloc_platform_device’; did you mean ‘is_sh_early_platform_device’? [-Werror=implicit-function-declaration]
    15 |     pdev = kunit_alloc_platform_device(test);
@@ -8,3 +11,19 @@ error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio�
 
 error: invalid use of undefined type ‘struct pt_gpio’
    26 |     pt_gpio->reg_base = fake_reg_base;
+
+ERROR:root:../drivers/gpio/pt_gpio_request_kunit_test.c:5:2: error: invalid preprocessing directive #inlcude; did you mean #include?
+    5 | #inlcude "gpio-amdpt.c"
+
+ERROR:root:../drivers/gpio/pt_gpio_request_kunit_test.c:7:8: error: redefinition of ‘struct pt_gpio_chip’
+    7 | struct pt_gpio_chip {
+
+ERROR:root:../drivers/gpio/pt_gpio_request_kunit_test.c: In function ‘pt_gpio_request’:
+
+error: implicit declaration of function ‘dev_dbg’ [-Werror=implicit-function-declaration]
+   22 |         dev_dbg(gc->parent, "pt_gpio_request offset=%x\n", offset);
+
+error: implicit declaration of function ‘dev_warn’ [-Werror=implicit-function-declaration]
+   28 |                 dev_warn(gc->parent, "PT GPIO pin %x reconfigured\n",
+
+ERROR:root:mv: cannot stat 'include/config/.tmp_kernel.release': No such file or directory

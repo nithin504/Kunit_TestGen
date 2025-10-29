@@ -1,0 +1,6 @@
+[15:22:14] Configuring KUnit Kernel ...
+[15:22:14] Building KUnit Kernel ...
+Populating config with:
+$ make ARCH=x86_64 O=.kunit olddefconfig
+Building with:
+$ make all compile_commands.json scripts_gdb ARCH=x86_64 O=.kunit --jobs=4
