@@ -1,0 +1,10 @@
+ERROR:root:../drivers/gpio/gpio-amdpt_branch.c: In function ‘pt_gpio_probe_test’:
+
+error: implicit declaration of function ‘kunit_alloc_platform_device’; did you mean ‘is_sh_early_platform_device’? [-Werror=implicit-function-declaration]
+   15 |     pdev = kunit_alloc_platform_device(test);
+
+error: invalid application of ‘sizeof’ to incomplete type ‘struct pt_gpio’
+   19 |     pt_gpio = kzalloc(sizeof(*pt_gpio), GFP_KERNEL);
+
+error: invalid use of undefined type ‘struct pt_gpio’
+   26 |     pt_gpio->reg_base = fake_reg_base;
