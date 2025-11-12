@@ -8,42 +8,69 @@ from sentence_transformers import SentenceTransformer
 from openai import OpenAI
 
 # --------------------- Configuration ---------------------
-BASE_DIR = Path("/home/amd/nithin/KunitGen/main_test_dir")
+BASE_DIR = Path(r"D:\AIprojects\llms\KunitGen\main_test_dir")
 LINUX_DIR = Path("/home/amd/linux")
-MODEL_NAME = "meta/llama-3.1-70b-instruct"   # Example: adjust for your API
+MODEL_NAME = "meta/llama-3.1-70b-instruct"
 TEMPERATURE = 0.4
 MAX_RETRIES = 3
 MAX_TOKENS = 8192
-VECTOR_INDEX = Path("code_index.faiss")
-VECTOR_MAP = Path("file_map.txt")
+VECTOR_INDEX = BASE_DIR / "code_index.faiss"
+VECTOR_MAP = BASE_DIR / "file_map.txt"
 
 # --------------------- Environment ------------------------
 load_dotenv()
 API_KEY = os.environ.get("NVIDIA_API_KEY")
 if not API_KEY:
     raise ValueError("NVIDIA_API_KEY environment variable not set.")
-
 client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=API_KEY)
 
-# --------------------- Embedding + Retrieval ---------------
+# --------------------- Build or Load FAISS Index ---------------------
+def build_faiss_index():
+    """Build FAISS index automatically if missing."""
+    code_dir = BASE_DIR / "reference_testcases"
+    files = list(code_dir.rglob("*.c"))
+    if not files:
+        print(f"⚠️ No .c files found in {code_dir}")
+        return None, []
+    print(f"📦 Building FAISS index from {len(files)} files...")
+    model = SentenceTransformer("all-MiniLM-L6-v2")
+    texts = [f.read_text(errors="ignore") for f in files]
+    embeddings = model.encode(texts, show_progress_bar=True)
+    dim = embeddings.shape[1]
+    index = faiss.IndexFlatL2(dim)
+    index.add(embeddings)
+    faiss.write_index(index, str(VECTOR_INDEX))
+    VECTOR_MAP.write_text("\n".join(str(p) for p in files))
+    print(f"✅ Saved index: {VECTOR_INDEX}")
+    print(f"✅ Saved file map: {VECTOR_MAP}")
+    return index, [str(p) for p in files]
+
 print("🔍 Loading embedding model and FAISS index...")
 embed_model = SentenceTransformer("all-MiniLM-L6-v2")
-index = faiss.read_index(str(VECTOR_INDEX))
-file_map = VECTOR_MAP.read_text().splitlines()
+if not VECTOR_INDEX.exists() or not VECTOR_MAP.exists():
+    index, file_map = build_faiss_index()
+else:
+    index = faiss.read_index(str(VECTOR_INDEX))
+    file_map = VECTOR_MAP.read_text().splitlines()
+    print(f"✅ Loaded FAISS index from {VECTOR_INDEX}")
 
+# --------------------- Retrieval ---------------------
 def retrieve_context(query_text: str, top_k: int = 3):
-    """Retrieve top-k relevant code snippets."""
+    """Retrieve top-k similar code snippets."""
+    if index is None:
+        return ["// Retrieval skipped (no FAISS index available)"]
     query_emb = embed_model.encode([query_text])
     distances, indices = index.search(query_emb, top_k)
     results = []
     for idx in indices[0]:
-        p = Path(file_map[idx])
-        if p.exists():
-            text = p.read_text(errors="ignore")
-            results.append(f"// From {p}\n{text[:1500]}")
+        if idx < len(file_map):
+            p = Path(file_map[idx])
+            if p.exists():
+                text = p.read_text(errors="ignore")
+                results.append(f"// From {p}\n{text[:1500]}")
     return results
 
-# --------------------- Model Query -------------------------
+# --------------------- Model Query ---------------------
 def query_model(prompt: str):
     try:
         completion = client.chat.completions.create(
@@ -52,16 +79,21 @@ def query_model(prompt: str):
             temperature=TEMPERATURE,
             max_tokens=MAX_TOKENS,
         )
-        return completion.choices[0].message.content.replace("```c", "").replace("```", "").strip()
+        return (
+            completion.choices[0]
+            .message.content.replace("```c", "")
+            .replace("```", "")
+            .strip()
+        )
     except Exception as e:
         return f"// Error: {e}"
 
-# --------------------- File Helpers ------------------------
+# --------------------- File Helpers ---------------------
 def safe_read(p: Path, fallback="// Missing file"):
     return p.read_text(encoding="utf-8") if p.exists() else fallback
 
 def load_context_files():
-    print("📂 Loading reference KUnit tests and logs...")
+    print("📂 Loading reference testcases and logs...")
     ref_dir = BASE_DIR / "reference_testcases"
     log_file = BASE_DIR / "compilation_log" / "compile_error.txt"
     return {
@@ -71,7 +103,7 @@ def load_context_files():
         "error_logs": safe_read(log_file, "// No previous error logs"),
     }
 
-# --------------------- Kernel File Updates -----------------
+# --------------------- Makefile / Kconfig Updates ---------------------
 def update_makefile(test_name: str):
     makefile_path = LINUX_DIR / "drivers/platform/x86/amd/pmf/Makefile"
     if not makefile_path.exists():
@@ -84,7 +116,7 @@ def update_makefile(test_name: str):
     updated_text = re.sub(pattern, r"# \1  # commented by KUnitGen", text)
     if updated_text != text:
         makefile_path.write_text(updated_text)
-        print("📝 Commented previous Makefile entries.")
+        print("📝 Commented old Makefile entries.")
     if entry not in updated_text:
         with open(makefile_path, "a") as f:
             f.write("\n" + entry + "\n")
@@ -94,7 +126,7 @@ def update_kconfig(test_name: str):
     kpath = LINUX_DIR / "drivers/platform/x86/amd/pmf/Kconfig"
     backup = kpath.with_suffix(".KunitGen_backup")
     if not kpath.exists():
-        print(f"❌ Kconfig not found at {kpath}")
+        print(f"❌ Kconfig not found: {kpath}")
         return
     if not backup.exists():
         backup.write_text(kpath.read_text())
@@ -131,7 +163,7 @@ def update_test_config(test_name: str):
             f.write("\n" + line + "\n")
         print(f"🧩 Enabled {line} in my_pmf.config")
 
-# --------------------- Compilation Check -------------------
+# --------------------- Compilation ---------------------
 def compile_and_check():
     print("⚙️ Running kernel build check...")
     kernel_dir = LINUX_DIR
@@ -143,11 +175,11 @@ def compile_and_check():
     subprocess.run(cmd, shell=True, cwd=kernel_dir)
     log_file = BASE_DIR / "compilation_log" / "compile_error.txt"
     if not log_file.exists():
-        print("❌ compile_error.txt not found")
+        print("❌ compile_error.txt not found.")
         return False
     lines = log_file.read_text().splitlines()
     errors, seen = [], set()
-    for i, line in enumerate(lines):
+    for line in lines:
         if re.search(r"(error:|fatal error:)", line, re.IGNORECASE):
             msg = line.split("error:")[-1].strip() if "error:" in line else line.strip()
             if msg not in seen:
@@ -156,7 +188,7 @@ def compile_and_check():
     clean_log = BASE_DIR / "compilation_log" / "clean_compile_errors.txt"
     clean_log.write_text("\n".join(errors) if errors else "No errors.")
     if errors:
-        print(f"❌ Compilation failed with {len(errors)} unique errors.")
+        print(f"❌ Compilation failed with {len(errors)} errors.")
         return False
     print("✅ Compilation successful.")
     return True
@@ -210,11 +242,11 @@ Output: compilable C KUnit test file only
             err_file = BASE_DIR / "compilation_log" / "compile_error.txt"
             if err_file.exists():
                 ctx["error_logs"] = err_file.read_text()
-            print("🔁 Retrying with error feedback...")
+            print("🔁 Retrying with updated error context...")
 
     print(f"❌ Failed to compile {func_file.name} after {MAX_RETRIES} attempts.")
 
-# --------------------- Main Entry ---------------------------
+# --------------------- Main ---------------------
 def main():
     print(f"--- 🚀 Starting RAG-based KUnit Generator in {BASE_DIR} ---")
     (BASE_DIR / "generated_tests").mkdir(parents=True, exist_ok=True)
