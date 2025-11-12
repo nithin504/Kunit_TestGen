@@ -9,7 +9,7 @@ import re
 
 # --------------------- CONFIG ---------------------
 BASE_DIR = Path(r"D:\AIprojects\llms\KunitGen\main_test_dir")
-MODEL_NAME = "meta/llama-3.1-70b-instruct"
+MODEL_NAME = "qwen/qwen3-coder-480b-a35b-instruc"
 EMBED_MODEL = "text-embedding-3-small"
 TEMPERATURE = 0.4
 MAX_TOKENS = 8192
@@ -22,7 +22,7 @@ load_dotenv()
 
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
+#snithink-proj-kZVfqkvRRSWZ8fqn1tSwK_Am0aolO0jpvKgDfMn1gvOrHUB6vM7a2kRkgTmVkbENy8yLvzO5XET3BlbkFJI23KHMm6RRA8L3qj0icuiWLOj3pi4iEfJRlIMoKJRU8-JBOASYwH-f5y-gUmpmxzn2cjjFjbYA
 if not NVIDIA_API_KEY or not OPENAI_API_KEY:
     raise ValueError("Both NVIDIA_API_KEY and OPENAI_API_KEY must be set in .env")
 
