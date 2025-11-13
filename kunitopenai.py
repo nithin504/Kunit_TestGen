@@ -1,3 +1,4 @@
+
 import os
 import faiss
 import subprocess
@@ -8,8 +9,8 @@ import numpy as np
 import re
 
 # --------------------- CONFIG ---------------------
-BASE_DIR = Path(r"D:\AIprojects\llms\KunitGen\main_test_dir")
-MODEL_NAME = "qwen/qwen3-coder-480b-a35b-instruc"
+BASE_DIR = Path("/home/amd/nithin/KunitGen/main_test_dir")
+MODEL_NAME = "qwen/qwen3-coder-480b-a35b-instruct"
 EMBED_MODEL = "text-embedding-3-small"
 TEMPERATURE = 0.4
 MAX_TOKENS = 8192
@@ -21,8 +22,8 @@ VECTOR_MAP = BASE_DIR / "file_map.txt"
 load_dotenv()
 
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-#snithink-proj-kZVfqkvRRSWZ8fqn1tSwK_Am0aolO0jpvKgDfMn1gvOrHUB6vM7a2kRkgTmVkbENy8yLvzO5XET3BlbkFJI23KHMm6RRA8L3qj0icuiWLOj3pi4iEfJRlIMoKJRU8-JBOASYwH-f5y-gUmpmxzn2cjjFjbYA
+OPENAI_API_KEY = "snithink-proj-kZVfqkvRRSWZ8fqn1tSwK_Am0aolO0jpvKgDfMn1gvOrHUB6vM7a2kRkgTmVkbENy8yLvzO5XET3BlbkFJI23KHMm6RRA8L3qj0icuiWLOj3pi4iEfJRlIMoKJRU8-JBOASYwH-f5y-gUmpmxzn2cjjFjbYA"
+
 if not NVIDIA_API_KEY or not OPENAI_API_KEY:
     raise ValueError("Both NVIDIA_API_KEY and OPENAI_API_KEY must be set in .env")
 
@@ -45,17 +46,13 @@ def build_faiss_index():
     embeddings = []
 
     for i, text in enumerate(texts):
-        emb = (
-            openai_client.embeddings.create(
-                model=EMBED_MODEL, input=text[:8000]  # truncate to stay within limits
-            )
-            .data[0]
-            .embedding
-        )
+        text_chunk = text[:8000] if len(text) > 8000 else text
+        response = openai_client.embeddings.create(model=EMBED_MODEL, input=text_chunk)
+        emb = response.data[0].embedding
         embeddings.append(emb)
         print(f"   → Embedded {files[i].name}")
 
-    embeddings = np.array(embeddings).astype("float32")
+    embeddings = np.array(embeddings, dtype="float32")
     dim = embeddings.shape[1]
     index = faiss.IndexFlatL2(dim)
     index.add(embeddings)
@@ -76,12 +73,10 @@ else:
 # --------------------- RETRIEVAL ---------------------
 def retrieve_context(query: str, top_k=3):
     """Retrieve top-k most relevant code snippets using OpenAI embeddings."""
-    query_emb = (
-        openai_client.embeddings.create(model=EMBED_MODEL, input=query[:8000])
-        .data[0]
-        .embedding
-    )
-    query_emb = np.array([query_emb]).astype("float32")
+    query_text = query[:8000] if len(query) > 8000 else query
+    response = openai_client.embeddings.create(model=EMBED_MODEL, input=query_text)
+    query_emb = np.array([response.data[0].embedding], dtype="float32")
+
     distances, indices = index.search(query_emb, top_k)
     results = []
     for idx in indices[0]:
