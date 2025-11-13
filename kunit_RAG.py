@@ -1,19 +1,18 @@
 import os
 import re
 import faiss
-import subprocess
 from pathlib import Path
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 from openai import OpenAI
 
 # --------------------- Configuration ---------------------
-BASE_DIR = Path(r"D:\AIprojects\llms\KunitGen\main_test_dir")
-LINUX_DIR = Path("/home/amd/linux")
-MODEL_NAME = "meta/llama-3.1-70b-instruct"
+BASE_DIR = Path("/home/amd/nithin/KunitGen)
+MODEL_NAME = "qwen/qwen3-coder-480b-a35b-instruct"
 TEMPERATURE = 0.4
-MAX_RETRIES = 3
 MAX_TOKENS = 8192
+MAX_RETRIES = 3
+
 VECTOR_INDEX = BASE_DIR / "code_index.faiss"
 VECTOR_MAP = BASE_DIR / "file_map.txt"
 
@@ -22,17 +21,18 @@ load_dotenv()
 API_KEY = os.environ.get("NVIDIA_API_KEY")
 if not API_KEY:
     raise ValueError("NVIDIA_API_KEY environment variable not set.")
+
 client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=API_KEY)
 
-# --------------------- Build or Load FAISS Index ---------------------
+# --------------------- Embedding + Index Setup ---------------
 def build_faiss_index():
-    """Build FAISS index automatically if missing."""
+    """Build FAISS index from available .c files if missing."""
     code_dir = BASE_DIR / "reference_testcases"
     files = list(code_dir.rglob("*.c"))
     if not files:
-        print(f"⚠️ No .c files found in {code_dir}")
+        print(f"⚠️ No .c files found under {code_dir}")
         return None, []
-    print(f"📦 Building FAISS index from {len(files)} files...")
+    print(f"📦 Building FAISS index from {len(files)} C source files...")
     model = SentenceTransformer("all-MiniLM-L6-v2")
     texts = [f.read_text(errors="ignore") for f in files]
     embeddings = model.encode(texts, show_progress_bar=True)
@@ -42,11 +42,13 @@ def build_faiss_index():
     faiss.write_index(index, str(VECTOR_INDEX))
     VECTOR_MAP.write_text("\n".join(str(p) for p in files))
     print(f"✅ Saved index: {VECTOR_INDEX}")
-    print(f"✅ Saved file map: {VECTOR_MAP}")
+    print(f"✅ Saved map: {VECTOR_MAP}")
     return index, [str(p) for p in files]
 
+# --------------------- Load or Build Index -------------------
 print("🔍 Loading embedding model and FAISS index...")
 embed_model = SentenceTransformer("all-MiniLM-L6-v2")
+
 if not VECTOR_INDEX.exists() or not VECTOR_MAP.exists():
     index, file_map = build_faiss_index()
 else:
@@ -54,9 +56,9 @@ else:
     file_map = VECTOR_MAP.read_text().splitlines()
     print(f"✅ Loaded FAISS index from {VECTOR_INDEX}")
 
-# --------------------- Retrieval ---------------------
+# --------------------- Retrieval -----------------------------
 def retrieve_context(query_text: str, top_k: int = 3):
-    """Retrieve top-k similar code snippets."""
+    """Retrieve top-k relevant code snippets."""
     if index is None:
         return ["// Retrieval skipped (no FAISS index available)"]
     query_emb = embed_model.encode([query_text])
@@ -70,7 +72,7 @@ def retrieve_context(query_text: str, top_k: int = 3):
                 results.append(f"// From {p}\n{text[:1500]}")
     return results
 
-# --------------------- Model Query ---------------------
+# --------------------- Model Query -------------------------
 def query_model(prompt: str):
     try:
         completion = client.chat.completions.create(
@@ -88,110 +90,18 @@ def query_model(prompt: str):
     except Exception as e:
         return f"// Error: {e}"
 
-# --------------------- File Helpers ---------------------
+# --------------------- File Helpers ------------------------
 def safe_read(p: Path, fallback="// Missing file"):
     return p.read_text(encoding="utf-8") if p.exists() else fallback
 
 def load_context_files():
-    print("📂 Loading reference testcases and logs...")
+    print("📂 Loading reference KUnit tests...")
     ref_dir = BASE_DIR / "reference_testcases"
-    log_file = BASE_DIR / "compilation_log" / "compile_error.txt"
     return {
         "sample_code1": safe_read(ref_dir / "kunit_test1.c"),
         "sample_code2": safe_read(ref_dir / "kunit_test2.c"),
         "sample_code3": safe_read(ref_dir / "kunit_test3.c"),
-        "error_logs": safe_read(log_file, "// No previous error logs"),
     }
-
-# --------------------- Makefile / Kconfig Updates ---------------------
-def update_makefile(test_name: str):
-    makefile_path = LINUX_DIR / "drivers/platform/x86/amd/pmf/Makefile"
-    if not makefile_path.exists():
-        print("⚠️ Makefile missing, skipping update.")
-        return
-    config_name = test_name.upper()
-    entry = f"obj-$(CONFIG_{config_name}) += {test_name}.o"
-    text = makefile_path.read_text()
-    pattern = re.compile(r"^(obj-\$\(\s*CONFIG_[A-Z0-9_]+\s*\)\s*\+=\s*\w+\.o)", re.MULTILINE)
-    updated_text = re.sub(pattern, r"# \1  # commented by KUnitGen", text)
-    if updated_text != text:
-        makefile_path.write_text(updated_text)
-        print("📝 Commented old Makefile entries.")
-    if entry not in updated_text:
-        with open(makefile_path, "a") as f:
-            f.write("\n" + entry + "\n")
-        print(f"🧩 Added to Makefile: {entry}")
-
-def update_kconfig(test_name: str):
-    kpath = LINUX_DIR / "drivers/platform/x86/amd/pmf/Kconfig"
-    backup = kpath.with_suffix(".KunitGen_backup")
-    if not kpath.exists():
-        print(f"❌ Kconfig not found: {kpath}")
-        return
-    if not backup.exists():
-        backup.write_text(kpath.read_text())
-        print(f"📦 Backup created: {backup}")
-    config_name = test_name.upper()
-    entry = (
-        f"\nconfig {config_name}\n"
-        f'\tbool "KUnit test for {test_name}"\n'
-        f"\tdepends on KUNIT\n"
-        f"\tdefault n\n"
-    )
-    lines = kpath.read_text().splitlines(keepends=True)
-    if any(f"config {config_name}" in l for l in lines):
-        print(f"ℹ️ Kconfig entry for {config_name} exists.")
-        return
-    new_lines, inserted = [], False
-    for line in lines:
-        if ("endif" in line or "source" in line) and not inserted:
-            new_lines.append(entry)
-            inserted = True
-        new_lines.append(line)
-    kpath.write_text("".join(new_lines))
-    print(f"✅ Added Kconfig entry for {config_name}")
-
-def update_test_config(test_name: str):
-    cfg = LINUX_DIR / "my_pmf.config"
-    if not cfg.exists():
-        print("⚠️ my_pmf.config missing.")
-        return
-    line = f"CONFIG_{test_name.upper()}=y"
-    text = cfg.read_text()
-    if line not in text:
-        with open(cfg, "a") as f:
-            f.write("\n" + line + "\n")
-        print(f"🧩 Enabled {line} in my_pmf.config")
-
-# --------------------- Compilation ---------------------
-def compile_and_check():
-    print("⚙️ Running kernel build check...")
-    kernel_dir = LINUX_DIR
-    cmd = (
-        f"cp {BASE_DIR}/generated_tests/*.c {LINUX_DIR}/drivers/gpio && "
-        f"./tools/testing/kunit/kunit.py run --kunitconfig=my_gpio.config --arch=x86_64 --raw_output > "
-        f"{BASE_DIR}/compilation_log/compile_error.txt 2>&1"
-    )
-    subprocess.run(cmd, shell=True, cwd=kernel_dir)
-    log_file = BASE_DIR / "compilation_log" / "compile_error.txt"
-    if not log_file.exists():
-        print("❌ compile_error.txt not found.")
-        return False
-    lines = log_file.read_text().splitlines()
-    errors, seen = [], set()
-    for line in lines:
-        if re.search(r"(error:|fatal error:)", line, re.IGNORECASE):
-            msg = line.split("error:")[-1].strip() if "error:" in line else line.strip()
-            if msg not in seen:
-                seen.add(msg)
-                errors.append(msg)
-    clean_log = BASE_DIR / "compilation_log" / "clean_compile_errors.txt"
-    clean_log.write_text("\n".join(errors) if errors else "No errors.")
-    if errors:
-        print(f"❌ Compilation failed with {len(errors)} errors.")
-        return False
-    print("✅ Compilation successful.")
-    return True
 
 # --------------------- Test Generation ---------------------
 def generate_test_for_function(func_file: Path):
@@ -216,41 +126,23 @@ You are a senior Linux kernel developer generating KUnit tests.
 ## Reference Code
 {ctx["sample_code2"]}
 
-## Previous Errors
-{ctx["error_logs"]}
-
 Rules:
-- Include headers correctly
+- Include required headers correctly
 - Use kunit_kzalloc for allocations
-- Avoid previous compile errors
-- Include "gpio-amdpt.c" for each testcase
 - Use KUNIT_EXPECT_* macros
 - Do not mock target functions
-Output: compilable C KUnit test file only
+- Output should be a compilable KUnit test C file
+- Do not include explanations, only C code
 """
         generated = query_model(prompt)
         out_file.write_text(generated)
+        print(f"✅ Generated test file: {out_file}")
+        break
 
-        update_makefile(test_name)
-        update_kconfig(test_name)
-        update_test_config(test_name)
-
-        if compile_and_check():
-            print(f"✅ Successfully built {test_name} on attempt {attempt}")
-            return
-        else:
-            err_file = BASE_DIR / "compilation_log" / "compile_error.txt"
-            if err_file.exists():
-                ctx["error_logs"] = err_file.read_text()
-            print("🔁 Retrying with updated error context...")
-
-    print(f"❌ Failed to compile {func_file.name} after {MAX_RETRIES} attempts.")
-
-# --------------------- Main ---------------------
+# --------------------- Main Entry ---------------------------
 def main():
-    print(f"--- 🚀 Starting RAG-based KUnit Generator in {BASE_DIR} ---")
+    print(f"--- 🚀 Starting RAG-based KUnit Test Generator in {BASE_DIR} ---")
     (BASE_DIR / "generated_tests").mkdir(parents=True, exist_ok=True)
-    (BASE_DIR / "compilation_log").mkdir(parents=True, exist_ok=True)
     func_dir = BASE_DIR / "test_functions"
     files = list(func_dir.glob("*.c"))
     if not files:
