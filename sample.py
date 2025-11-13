@@ -29,7 +29,7 @@ if not NVIDIA_KEY:
     raise ValueError("❌ NVIDIA_API_KEY not set in .env")
 
 # two clients: one for OpenAI, one for NVIDIA
-openai_client = OpenAI(api_key=OPENAI_KEY)
+openai_client = OpenAI(api_key="snithink-proj-kZVfqkvRRSWZ8fqn1tSwK_Am0aolO0jpvKgDfMn1gvOrHUB6vM7a2kRkgTmVkbENy8yLvzO5XET3BlbkFJI23KHMm6RRA8L3qj0icuiWLOj3pi4iEfJRlIMoKJRU8-JBOASYwH-f5y-gUmpmxzn2cjjFjbYA"))
 nvidia_client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=NVIDIA_KEY)
 
 # --------------------- Embedding + Index Setup ---------------
