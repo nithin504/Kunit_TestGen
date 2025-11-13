@@ -1,15 +1,12 @@
-
-import os
+import re
 import faiss
-import subprocess
+import numpy as np
 from pathlib import Path
 from dotenv import load_dotenv
 from openai import OpenAI
-import numpy as np
-import re
 
-# --------------------- CONFIG ---------------------
-BASE_DIR = Path("/home/amd/nithin/KunitGen/main_test_dir")
+# --------------------- Configuration ---------------------
+BASE_DIR = Path("/home/amd/nithin/KunitGen")
 MODEL_NAME = "qwen/qwen3-coder-480b-a35b-instruct"
 EMBED_MODEL = "text-embedding-3-small"
 TEMPERATURE = 0.4
@@ -19,40 +16,36 @@ MAX_RETRIES = 3
 VECTOR_INDEX = BASE_DIR / "code_index.faiss"
 VECTOR_MAP = BASE_DIR / "file_map.txt"
 
+# --------------------- Environment ------------------------
 load_dotenv()
+API_KEY = os.environ.get("NVIDIA_API_KEY")
+if not API_KEY:
+    raise ValueError("NVIDIA_API_KEY environment variable not set.")
 
-NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
-OPENAI_API_KEY = "snithink-proj-kZVfqkvRRSWZ8fqn1tSwK_Am0aolO0jpvKgDfMn1gvOrHUB6vM7a2kRkgTmVkbENy8yLvzO5XET3BlbkFJI23KHMm6RRA8L3qj0icuiWLOj3pi4iEfJRlIMoKJRU8-JBOASYwH-f5y-gUmpmxzn2cjjFjbYA"
+client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key="snithink-proj-kZVfqkvRRSWZ8fqn1tSwK_Am0aolO0jpvKgDfMn1gvOrHUB6vM7a2kRkgTmVkbENy8yLvzO5XET3BlbkFJI23KHMm6RRA8L3qj0icuiWLOj3pi4iEfJRlIMoKJRU8-JBOASYwH-f5y-gUmpmxzn2cjjFjbYA"
+)
 
-if not NVIDIA_API_KEY or not OPENAI_API_KEY:
-    raise ValueError("Both NVIDIA_API_KEY and OPENAI_API_KEY must be set in .env")
-
-# OpenAI client for embeddings
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
-# NVIDIA client for generation
-nvidia_client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=NVIDIA_API_KEY)
-
-# --------------------- BUILD INDEX ---------------------
-def build_faiss_index():
-    """Create FAISS index from C and H files using OpenAI embeddings."""
-    code_dir = BASE_DIR / "reference_testcases"
-    files = list(code_dir.rglob("*.c")) + list(code_dir.rglob("*.h"))
-    if not files:
-        print("⚠️ No source files found for indexing.")
-        return None, []
-
-    print(f"📦 Building FAISS index from {len(files)} files using OpenAI embeddings...")
-    texts = [f.read_text(errors="ignore") for f in files]
+# --------------------- Embedding + Index Setup ---------------
+def get_embeddings(texts):
+    """Generate embeddings using OpenAI embedding model."""
     embeddings = []
+    for i in range(0, len(texts), 50):  # batch for safety
+        batch = texts[i:i + 50]
+        response = client.embeddings.create(model=EMBED_MODEL, input=batch)
+        batch_embeds = [e.embedding for e in response.data]
+        embeddings.extend(batch_embeds)
+    return np.array(embeddings, dtype="float32")
 
-    for i, text in enumerate(texts):
-        text_chunk = text[:8000] if len(text) > 8000 else text
-        response = openai_client.embeddings.create(model=EMBED_MODEL, input=text_chunk)
-        emb = response.data[0].embedding
-        embeddings.append(emb)
-        print(f"   → Embedded {files[i].name}")
-
-    embeddings = np.array(embeddings, dtype="float32")
+def build_faiss_index():
+    """Build FAISS index from .c files if missing."""
+    code_dir = BASE_DIR / "reference_testcases"
+    files = list(code_dir.rglob("*.c"))
+    if not files:
+        print(f"⚠️ No .c files found under {code_dir}")
+        return None, []
+    print(f"📦 Building FAISS index from {len(files)} C source files...")
+    texts = [f.read_text(errors="ignore") for f in files]
+    embeddings = get_embeddings(texts)
     dim = embeddings.shape[1]
     index = faiss.IndexFlatL2(dim)
     index.add(embeddings)
@@ -62,36 +55,36 @@ def build_faiss_index():
     print(f"✅ Saved map: {VECTOR_MAP}")
     return index, [str(p) for p in files]
 
-# --------------------- LOAD OR BUILD INDEX ---------------------
+# --------------------- Load or Build Index -------------------
+print("🔍 Loading FAISS index and embedding model...")
 if not VECTOR_INDEX.exists() or not VECTOR_MAP.exists():
     index, file_map = build_faiss_index()
 else:
     index = faiss.read_index(str(VECTOR_INDEX))
     file_map = VECTOR_MAP.read_text().splitlines()
-    print(f"✅ Loaded FAISS index ({len(file_map)} files).")
+    print(f"✅ Loaded FAISS index from {VECTOR_INDEX}")
 
-# --------------------- RETRIEVAL ---------------------
-def retrieve_context(query: str, top_k=3):
-    """Retrieve top-k most relevant code snippets using OpenAI embeddings."""
-    query_text = query[:8000] if len(query) > 8000 else query
-    response = openai_client.embeddings.create(model=EMBED_MODEL, input=query_text)
+# --------------------- Retrieval -----------------------------
+def retrieve_context(query_text: str, top_k: int = 3):
+    """Retrieve top-k relevant code snippets."""
+    if index is None:
+        return ["// Retrieval skipped (no FAISS index available)"]
+    response = client.embeddings.create(model=EMBED_MODEL, input=[query_text])
     query_emb = np.array([response.data[0].embedding], dtype="float32")
-
     distances, indices = index.search(query_emb, top_k)
     results = []
     for idx in indices[0]:
-        if 0 <= idx < len(file_map):
+        if idx < len(file_map):
             p = Path(file_map[idx])
             if p.exists():
                 text = p.read_text(errors="ignore")
                 results.append(f"// From {p}\n{text[:1500]}")
     return results
 
-# --------------------- MODEL QUERY ---------------------
+# --------------------- Model Query -------------------------
 def query_model(prompt: str):
-    """Query NVIDIA Llama model."""
     try:
-        completion = nvidia_client.chat.completions.create(
+        completion = client.chat.completions.create(
             model=MODEL_NAME,
             messages=[{"role": "user", "content": prompt}],
             temperature=TEMPERATURE,
@@ -106,87 +99,67 @@ def query_model(prompt: str):
     except Exception as e:
         return f"// Error: {e}"
 
-# --------------------- GENERATION ---------------------
+# --------------------- File Helpers ------------------------
+def safe_read(p: Path, fallback="// Missing file"):
+    return p.read_text(encoding="utf-8") if p.exists() else fallback
+
+def load_context_files():
+    print("📂 Loading reference KUnit tests...")
+    ref_dir = BASE_DIR / "reference_testcases"
+    return {
+        "sample_code1": safe_read(ref_dir / "kunit_test1.c"),
+        "sample_code2": safe_read(ref_dir / "kunit_test2.c"),
+        "sample_code3": safe_read(ref_dir / "kunit_test3.c"),
+    }
+
+# --------------------- Test Generation ---------------------
 def generate_test_for_function(func_file: Path):
-    func_code = func_file.read_text(errors="ignore")
+    func_code = func_file.read_text()
+    test_name = f"{func_file.stem}_kunit_test"
+    out_file = BASE_DIR / "generated_tests" / f"{test_name}.c"
+    ctx = load_context_files()
     retrieved = retrieve_context(func_code, top_k=3)
     retrieved_text = "\n\n".join(retrieved)
 
-    out_dir = BASE_DIR / "generated_tests"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_file = out_dir / f"{func_file.stem}_kunit_test.c"
-
-    print(f"\n🧠 Generating KUnit test for {func_file.name}...")
-
     for attempt in range(1, MAX_RETRIES + 1):
+        print(f"\n🔹 Attempt {attempt}/{MAX_RETRIES} for {func_file.name}")
         prompt = f"""
-You are a senior Linux kernel developer generating a KUnit test.
+You are a senior Linux kernel developer generating KUnit tests.
 
 ## Function to test
 {func_code}
 
-## Retrieved Reference Code
+## Retrieved Similar Code
 {retrieved_text}
 
+## Reference Code
+{ctx["sample_code2"]}
+
 Rules:
-- Use correct headers
-- Use kunit_kzalloc for memory
+- Include required headers correctly
+- Use kunit_kzalloc for allocations
 - Use KUNIT_EXPECT_* macros
-- No mocks for target functions
-- Output: only valid C code, no text explanations
+- Do not mock target functions
+- Output should be a compilable KUnit test C file
+- Do not include explanations, only C code
 """
         generated = query_model(prompt)
-        out_file.write_text(generated, encoding="utf-8")
-        print(f"✅ Generated: {out_file}")
+        out_file.write_text(generated)
+        print(f"✅ Generated test file: {out_file}")
         break
 
-# --------------------- MAKEFILE GENERATION ---------------------
-def create_makefile():
-    makefile_path = BASE_DIR / "generated_tests" / "Makefile"
-    content = """
-obj-m += kunit_generated_tests.o
-
-kunit_generated_tests-objs := $(patsubst %.c,%.o,$(wildcard *_kunit_test.c))
-
-all:
-\tmake -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
-
-clean:
-\tmake -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
-"""
-    makefile_path.write_text(content.strip(), encoding="utf-8")
-    print(f"🧩 Makefile created at {makefile_path}")
-
-# --------------------- COMPILE TESTS ---------------------
-def compile_tests():
-    print("⚙️ Compiling generated tests using Makefile...")
-    gen_dir = BASE_DIR / "generated_tests"
-    result = subprocess.run(["make"], cwd=gen_dir, capture_output=True, text=True)
-    if result.returncode == 0:
-        print("✅ Compilation successful.")
-    else:
-        print("❌ Compilation failed:")
-        print(result.stderr)
-
-# --------------------- MAIN ---------------------
+# --------------------- Main Entry ---------------------------
 def main():
-    print(f"--- 🚀 Starting KUnit Test Generator in {BASE_DIR} ---")
+    print(f"--- 🚀 Starting RAG-based KUnit Test Generator in {BASE_DIR} ---")
+    (BASE_DIR / "generated_tests").mkdir(parents=True, exist_ok=True)
     func_dir = BASE_DIR / "test_functions"
-    if not func_dir.exists():
-        print(f"❌ Missing directory: {func_dir}")
-        return
     files = list(func_dir.glob("*.c"))
     if not files:
-        print(f"❌ No .c files found in {func_dir}")
+        print(f"❌ No .c files in {func_dir}")
         return
-
-    for func_file in files:
-        generate_test_for_function(func_file)
-
-    create_makefile()
-    compile_tests()
-
-    print("\n--- ✅ All functions processed and compiled. ---")
+    for f in files:
+        generate_test_for_function(f)
+    print("\n--- ✅ All functions processed. ---")
 
 if __name__ == "__main__":
     main()
