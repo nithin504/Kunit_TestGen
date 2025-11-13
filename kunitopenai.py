@@ -22,16 +22,47 @@ API_KEY = os.environ.get("NVIDIA_API_KEY")
 if not API_KEY:
     raise ValueError("NVIDIA_API_KEY environment variable not set.")
 
-client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key="snithink-proj-kZVfqkvRRSWZ8fqn1tSwK_Am0aolO0jpvKgDfMn1gvOrHUB6vM7a2kRkgTmVkbENy8yLvzO5XET3BlbkFJI23KHMm6RRA8L3qj0icuiWLOj3pi4iEfJRlIMoKJRU8-JBOASYwH-f5y-gUmpmxzn2cjjFjbYA"
-)
+client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=")import os
+import re
+import faiss
+import numpy as np
+from pathlib import Path
+from dotenv import load_dotenv
+from openai import OpenAI
+
+# --------------------- Configuration ---------------------
+BASE_DIR = Path("/home/amd/nithin/KunitGen")
+OPENAI_EMBED_MODEL = "text-embedding-3-small"
+NVIDIA_GEN_MODEL = "qwen/qwen3-coder-480b-a35b-instruct"
+TEMPERATURE = 0.4
+MAX_TOKENS = 8192
+MAX_RETRIES = 3
+
+VECTOR_INDEX = BASE_DIR / "code_index.faiss"
+VECTOR_MAP = BASE_DIR / "file_map.txt"
+
+# --------------------- Environment ------------------------
+load_dotenv()
+
+OPENAI_KEY = os.getenv("OPENAI_API_KEY")
+NVIDIA_KEY = os.getenv("NVIDIA_API_KEY")
+
+if not OPENAI_KEY:
+    raise ValueError("❌ OPENAI_API_KEY not set in .env")
+if not NVIDIA_KEY:
+    raise ValueError("❌ NVIDIA_API_KEY not set in .env")
+
+# two clients: one for OpenAI, one for NVIDIA
+openai_client = OpenAI(api_key="snithink-proj-kZVfqkvRRSWZ8fqn1tSwK_Am0aolO0jpvKgDfMn1gvOrHUB6vM7a2kRkgTmVkbENy8yLvzO5XET3BlbkFJI23KHMm6RRA8L3qj0icuiWLOj3pi4iEfJRlIMoKJRU8-JBOASYwH-f5y-gUmpmxzn2cjjFjbYA")
+nvidia_client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=NVIDIA_KEY)
 
 # --------------------- Embedding + Index Setup ---------------
 def get_embeddings(texts):
-    """Generate embeddings using OpenAI embedding model."""
+    """Generate embeddings using OpenAI text-embedding-3-small."""
     embeddings = []
     for i in range(0, len(texts), 50):  # batch for safety
         batch = texts[i:i + 50]
-        response = client.embeddings.create(model=EMBED_MODEL, input=batch)
+        response = openai_client.embeddings.create(model=OPENAI_EMBED_MODEL, input=batch)
         batch_embeds = [e.embedding for e in response.data]
         embeddings.extend(batch_embeds)
     return np.array(embeddings, dtype="float32")
@@ -69,7 +100,7 @@ def retrieve_context(query_text: str, top_k: int = 3):
     """Retrieve top-k relevant code snippets."""
     if index is None:
         return ["// Retrieval skipped (no FAISS index available)"]
-    response = client.embeddings.create(model=EMBED_MODEL, input=[query_text])
+    response = openai_client.embeddings.create(model=OPENAI_EMBED_MODEL, input=[query_text])
     query_emb = np.array([response.data[0].embedding], dtype="float32")
     distances, indices = index.search(query_emb, top_k)
     results = []
@@ -83,9 +114,10 @@ def retrieve_context(query_text: str, top_k: int = 3):
 
 # --------------------- Model Query -------------------------
 def query_model(prompt: str):
+    """Query NVIDIA code generation model."""
     try:
-        completion = client.chat.completions.create(
-            model=MODEL_NAME,
+        completion = nvidia_client.chat.completions.create(
+            model=NVIDIA_GEN_MODEL,
             messages=[{"role": "user", "content": prompt}],
             temperature=TEMPERATURE,
             max_tokens=MAX_TOKENS,
