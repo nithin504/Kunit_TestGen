@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer
 from openai import OpenAI
 
 # --------------------- Configuration ---------------------
-BASE_DIR = Path("/home/amd/nithin/KunitGen)
+BASE_DIR = Path("/home/amd/nithin/KunitGen/main_test_dir")  # ✅ Fixed missing quote
 MODEL_NAME = "qwen/qwen3-coder-480b-a35b-instruct"
 TEMPERATURE = 0.4
 MAX_TOKENS = 8192
@@ -107,7 +107,10 @@ def load_context_files():
 def generate_test_for_function(func_file: Path):
     func_code = func_file.read_text()
     test_name = f"{func_file.stem}_kunit_test"
-    out_file = BASE_DIR / "generated_tests" / f"{test_name}.c"
+    out_dir = BASE_DIR / "generated_tests"
+    out_dir.mkdir(parents=True, exist_ok=True)  # ✅ Ensure directory exists
+    out_file = out_dir / f"{test_name}.c"
+
     ctx = load_context_files()
     retrieved = retrieve_context(func_code, top_k=3)
     retrieved_text = "\n\n".join(retrieved)
@@ -135,6 +138,15 @@ Rules:
 - Do not include explanations, only C code
 """
         generated = query_model(prompt)
+
+        # ✅ Debug logs
+        print(f"Generated content length: {len(generated)}")
+        print(f"Output path: {out_file.resolve()}")
+
+        if len(generated.strip()) == 0 or generated.startswith("// Error"):
+            print(f"⚠️ Generation failed: {generated}")
+            continue
+
         out_file.write_text(generated)
         print(f"✅ Generated test file: {out_file}")
         break
@@ -142,7 +154,6 @@ Rules:
 # --------------------- Main Entry ---------------------------
 def main():
     print(f"--- 🚀 Starting RAG-based KUnit Test Generator in {BASE_DIR} ---")
-    (BASE_DIR / "generated_tests").mkdir(parents=True, exist_ok=True)
     func_dir = BASE_DIR / "test_functions"
     files = list(func_dir.glob("*.c"))
     if not files:
